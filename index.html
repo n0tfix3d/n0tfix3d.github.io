@@ -414,6 +414,59 @@ footer .fa { color: var(--accent) }
   .hero-stats { gap: 1.8rem }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important } }
+
+/* ══════════════════════════════════════
+   CUSTOM CURSOR
+══════════════════════════════════════ */
+@media (pointer: fine) {
+  * { cursor: none !important }
+
+  .cur-dot {
+    position: fixed; pointer-events: none; z-index: 9999;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent), 0 0 24px rgba(34,211,238,.35);
+    transform: translate(-50%,-50%);
+    transition: transform .12s, opacity .2s, width .15s, height .15s;
+    will-change: left, top;
+  }
+  .cur-ring {
+    position: fixed; pointer-events: none; z-index: 9998;
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid rgba(34,211,238,.55);
+    transform: translate(-50%,-50%);
+    will-change: left, top;
+    transition: width .22s cubic-bezier(.25,.46,.45,.94),
+                height .22s cubic-bezier(.25,.46,.45,.94),
+                border-color .22s, opacity .22s, border-width .22s;
+  }
+  /* crosshair ticks */
+  .cur-ring::before, .cur-ring::after {
+    content: ''; position: absolute; background: rgba(34,211,238,.5);
+    left: 50%; top: 50%; transform: translate(-50%,-50%);
+  }
+  .cur-ring::before { width: 6px; height: 1px }
+  .cur-ring::after  { width: 1px; height: 6px }
+
+  /* hover state — ring expands, dot shrinks */
+  .cur-dot.hov  { transform: translate(-50%,-50%) scale(0); opacity: 0 }
+  .cur-ring.hov { width: 50px; height: 50px; border-color: var(--accent); border-width: 2px }
+
+  /* click ripple */
+  .cur-ripple {
+    position: fixed; pointer-events: none; z-index: 9997;
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid rgba(34,211,238,.7);
+    transform: translate(-50%,-50%) scale(1);
+    animation: cur-pulse .5s ease-out forwards;
+  }
+  @keyframes cur-pulse {
+    to { transform: translate(-50%,-50%) scale(2.5); opacity: 0 }
+  }
+
+  /* hide when off-window */
+  .cur-dot.off, .cur-ring.off { opacity: 0 }
+}
 </style>
 </head>
 <body>
@@ -806,6 +859,63 @@ const nobs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.35 });
 secs.forEach(s => nobs.observe(s));
+</script>
+
+<!-- CUSTOM CURSOR -->
+<script>
+(function () {
+  if (!window.matchMedia('(pointer: fine)').matches) return;
+
+  const dot  = Object.assign(document.createElement('div'), { className: 'cur-dot off' });
+  const ring = Object.assign(document.createElement('div'), { className: 'cur-ring off' });
+  document.body.append(dot, ring);
+
+  let mx = -200, my = -200;
+  let rx = -200, ry = -200;
+  let raf;
+
+  /* exact dot */
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx + 'px';
+    dot.style.top  = my + 'px';
+    dot.classList.remove('off');
+    ring.classList.remove('off');
+  });
+
+  /* smooth ring lerp */
+  function loop() {
+    rx += (mx - rx) * 0.11;
+    ry += (my - ry) * 0.11;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    raf = requestAnimationFrame(loop);
+  }
+  loop();
+
+  /* hover — interactive elements */
+  const SEL = 'a, button, .btn, .cve-card, .hof-card, .nav-cve, input, label';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(SEL)) { dot.classList.add('hov'); ring.classList.add('hov'); }
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(SEL)) { dot.classList.remove('hov'); ring.classList.remove('hov'); }
+  });
+
+  /* click ripple */
+  document.addEventListener('click', e => {
+    const r = document.createElement('div');
+    r.className = 'cur-ripple';
+    r.style.left = e.clientX + 'px';
+    r.style.top  = e.clientY + 'px';
+    document.body.appendChild(r);
+    setTimeout(() => r.remove(), 520);
+  });
+
+  /* hide when leaving window */
+  document.addEventListener('mouseleave', () => { dot.classList.add('off'); ring.classList.add('off'); });
+  document.addEventListener('mouseenter', () => { dot.classList.remove('off'); ring.classList.remove('off'); });
+})();
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
