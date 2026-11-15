@@ -384,6 +384,40 @@ h1.hero-name em { font-style: normal; color: var(--accent); text-shadow: 0 0 60p
 .tcur { display: inline-block; width: 7px; height: 14px; background: var(--accent); vertical-align: middle; animation: blink 1s step-end infinite }
 
 /* ══════════════════════════════════════
+   CONSOLE / TERMINAL
+══════════════════════════════════════ */
+#console-sec { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
+
+.console-win {
+  background: #030508; border: 1px solid var(--border); border-radius: var(--r);
+  overflow: hidden; font-family: var(--mono); max-width: 860px;
+}
+.con-topbar {
+  display: flex; align-items: center; gap: .45rem;
+  padding: .65rem 1.1rem; background: #090c14; border-bottom: 1px solid var(--border);
+}
+.con-title-txt {
+  flex: 1; text-align: center; font-size: 11px; color: var(--text3); letter-spacing: .05em;
+}
+.con-body {
+  padding: 1.6rem 2rem; min-height: 340px;
+  font-size: .88rem; line-height: 1.95; color: var(--text2);
+}
+.cln { display: block }
+.cp { color: var(--accent) }          /* prompt */
+.cc { color: var(--text) }            /* command */
+.co { color: var(--low) }             /* ok / success */
+.ce { color: var(--critical) }        /* error / critical */
+.cm { color: var(--text3) }           /* comment / muted */
+.cw { color: var(--high) }            /* warning */
+.ch { color: var(--accent) }          /* highlight */
+.con-cur {
+  display: inline-block; width: 7px; height: .9em;
+  background: var(--accent); vertical-align: middle;
+  animation: blink 1s step-end infinite; margin-left: 1px;
+}
+
+/* ══════════════════════════════════════
    FOOTER
 ══════════════════════════════════════ */
 footer {
@@ -521,6 +555,22 @@ footer .fa { color: var(--accent) }
             <a href="https://drexel.edu/it/security/services-processes/bug-bounty/" target="_blank" rel="noopener" class="cve-ref high">Drexel University</a>
           </span>
         </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CONSOLE ─── -->
+  <section id="console-sec" class="fi">
+    <div class="wrap">
+      <div class="stag">in the field</div>
+      <h2>The Workflow</h2>
+      <div class="divider"></div>
+      <div class="console-win">
+        <div class="con-topbar">
+          <span class="td r"></span><span class="td y"></span><span class="td g"></span>
+          <span class="con-title-txt">hiddencry@kali — bash — 120×38</span>
+        </div>
+        <div class="con-body" id="con-body"><span class="con-cur"></span></div>
       </div>
     </div>
   </section>
@@ -806,6 +856,88 @@ const nobs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.35 });
 secs.forEach(s => nobs.observe(s));
+</script>
+
+<!-- CONSOLE ANIMATION -->
+<script>
+(function () {
+  const LINES = [
+    { html: '<span class="cp">(root㉿kali)-[~/audit/yeswiki-4.6.5]</span>' },
+    { html: '<span class="cp">└─$</span> <span class="cc">ffuf -u "http://target/wiki/?action=formula&expr=FUZZ" -w ssti.txt -mc 200</span>' },
+    { delay: 520, html: '' },
+    { html: '<span class="cm">        /' + '\\\\       /' + '\\\\</span>' },
+    { html: '<span class="cm">       /  ' + '\\\\     /  ' + '\\\\      __________</span>' },
+    { html: '<span class="cm">      / /\\ \\   /  \\ \\    / ffuf vX.X /</span>' },
+    { html: '<span class="cm">     / /  \\ \\ / /\\ \\ \\  /_________ /</span>' },
+    { delay: 300, html: '' },
+    { html: '<span class="cm">________________________________________________</span>' },
+    { delay: 400, html: '<span class="cc">:: Method           :</span> GET' },
+    { html: '<span class="cc">:: URL              :</span> http://target/wiki/?action=formula&amp;expr=FUZZ' },
+    { html: '<span class="cc">:: Wordlist         :</span> FUZZ: ssti.txt' },
+    { delay: 350, html: '<span class="cm">________________________________________________</span>' },
+    { delay: 600, html: '' },
+    { html: '<span class="cm">[Status: 200] * FUZZ: 7*7</span>' },
+    { html: '<span class="cm">[Status: 200] * FUZZ: test</span>' },
+    { delay: 280, html: '<span class="co">[Status: 200, Size: 2] * FUZZ: {{7*7}}</span>' },
+    { delay: 180, html: '' },
+    { html: '<span class="cw">[!] Template injection candidate detected → {{7*7}} → response: 49</span>' },
+    { delay: 420, html: '' },
+    { html: '<span class="cp">(root㉿kali)-[~/audit/yeswiki-4.6.5]</span>' },
+    { html: '<span class="cp">└─$</span> <span class="cc">python3 poc_yeswiki.py --target http://target --payload rce</span>' },
+    { delay: 580, html: '' },
+    { html: '<span class="co">[+] Connecting to YesWiki 4.6.5...</span>' },
+    { html: '<span class="co">[+] Testing eval() injection via formula calculator</span>' },
+    { delay: 350, html: '<span class="co">[+] Payload sent: __import__(\'os\').popen(\'id\').read()</span>' },
+    { delay: 420, html: '<span class="co">[+] Response:  uid=33(www-data) gid=33(www-data) groups=33(www-data)</span>' },
+    { delay: 200, html: '' },
+    { html: '<span class="ce">[ CRITICAL ] Unauthenticated RCE via unsafe eval() in formula calculator</span>' },
+    { html: '<span class="ce">[ CRITICAL ] No authentication required — affects all versions ≤ 4.6.5</span>' },
+    { delay: 380, html: '' },
+    { html: '<span class="cp">(root㉿kali)-[~/audit/yeswiki-4.6.5]</span>' },
+    { html: '<span class="cp">└─$</span> <span class="cc">python3 ghsa_report.py --severity CRITICAL --cvss 9.8 --vendor yeswiki</span>' },
+    { delay: 620, html: '' },
+    { html: '<span class="co">[+] Advisory drafted</span>' },
+    { html: '<span class="co">[+] Submitting to vendor via GitHub Security Advisory...</span>' },
+    { delay: 450, html: '<span class="ch">[+] CVE-2026-52778 assigned — CVSS 9.8 / CRITICAL</span>' },
+    { delay: 300, html: '<span class="ch">[+] Patch released in YesWiki 4.6.6 — Coordinated disclosure complete ✓</span>' },
+    { delay: 200, html: '' },
+    { html: '<span class="cp">(root㉿kali)-[~/audit/yeswiki-4.6.5]</span>' },
+    { html: '<span class="cp">└─$</span> <span class="con-cur"></span>' },
+  ];
+
+  const body = document.getElementById('con-body');
+  if (!body) return;
+
+  const section = document.getElementById('console-sec');
+  let started = false;
+
+  async function runConsole() {
+    body.innerHTML = '';
+    let lineEl = null;
+    for (const ln of LINES) {
+      if (ln.delay) await new Promise(r => setTimeout(r, ln.delay));
+      else await new Promise(r => setTimeout(r, 55));
+      if (ln.html === '') {
+        body.insertAdjacentHTML('beforeend', '<span class="cln">&nbsp;</span>');
+      } else if (ln.html.endsWith('<span class="con-cur"></span>')) {
+        body.insertAdjacentHTML('beforeend', '<span class="cln">' + ln.html + '</span>');
+      } else {
+        body.insertAdjacentHTML('beforeend', '<span class="cln">' + ln.html + '</span>');
+      }
+      body.scrollTop = body.scrollHeight;
+    }
+  }
+
+  const io = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !started) {
+      started = true;
+      setTimeout(runConsole, 400);
+      io.disconnect();
+    }
+  }, { threshold: 0.25 });
+
+  io.observe(section);
+})();
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
