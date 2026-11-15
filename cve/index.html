@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#07090f" />
+  <meta name="description" content="HiddenCry — CVE Advisories: Bludit CMS, phpMyFAQ, YesWiki. Full technical reports with PoC screenshots, timelines and remediation." />
+  <title>CVE Advisories — HiddenCry</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+  /* Layout: sticky nav + single-scroll sections, hash anchors */
+  :root {
+    --bg:           #07090f;
+    --surface:      #0c0f1a;
+    --card:         #0f1320;
+    --card-hover:   #141929;
+    --border:       #1a2235;
+    --border-b:     #26354f;
+    --accent:       #22d3ee;
+    --accent-dim:   rgba(34,211,238,0.12);
+    --accent-glow:  rgba(34,211,238,0.06);
+    --critical:     #ff3860;
+    --critical-bg:  rgba(255,56,96,0.1);
+    --high:         #ff7a1a;
+    --high-bg:      rgba(255,122,26,0.1);
+    --low:          #22d472;
+    --low-bg:       rgba(34,212,114,0.1);
+    --text:         #c8d0e0;
+    --text-2:       #7a8599;
+    --text-3:       #3f4f63;
+    --mono:         'IBM Plex Mono', 'JetBrains Mono', monospace;
+    --heading:      'Space Grotesk', system-ui, sans-serif;
+    --body:         'Inter', system-ui, sans-serif;
+    --r:            8px;
+    --r-sm:         5px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: var(--body);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* ─── GRID BG ─── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(34,211,238,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,211,238,.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── NAV ─── */
+  .site-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(7,9,15,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 max(24px, env(safe-area-inset-left,0px));
+    display: flex; align-items: center; gap: 8px;
+    height: 54px;
+  }
+  .nav-logo {
+    font-family: var(--mono); font-size: 13px; font-weight: 500;
+    color: var(--accent); text-decoration: none; letter-spacing: .03em;
+    white-space: nowrap;
+  }
+  .nav-logo span { color: var(--text-2); }
+  .nav-sep { color: var(--text-3); font-family: var(--mono); font-size: 12px; padding: 0 4px; }
+  .nav-current { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
+  .nav-links {
+    display: flex; gap: 2px; flex-wrap: nowrap; margin-left: 16px; overflow: hidden;
+  }
+  .nav-links a {
+    font-family: var(--mono); font-size: 11px; color: var(--text-3);
+    text-decoration: none; padding: 4px 8px; border-radius: var(--r-sm);
+    transition: color .15s, background .15s; white-space: nowrap;
+  }
+  .nav-links a:hover { color: var(--accent); background: var(--accent-dim); }
+  .nav-links a.active { color: var(--accent); }
+  .nav-back {
+    margin-left: auto;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-2); text-decoration: none;
+    padding: 5px 12px; border: 1px solid var(--border); border-radius: var(--r-sm);
+    transition: all .15s; white-space: nowrap; flex-shrink: 0;
+  }
+  .nav-back:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 60px max(24px,env(safe-area-inset-left,0px)) 48px;
+    position: relative; z-index: 1; max-width: 1200px; margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 10px; color: var(--accent);
+    letter-spacing: .14em; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-family: var(--heading); font-size: clamp(26px,5vw,48px);
+    font-weight: 700; line-height: 1.1; margin: 0 0 18px;
+    text-wrap: balance; max-width: 600px; color: #fff;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero-desc { color: var(--text-2); max-width: 500px; margin-bottom: 32px; font-size: 14px; }
+  .hero-stats { display: flex; gap: 28px; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-num { font-family: var(--heading); font-size: 26px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: .1em; font-family: var(--mono); }
+
+  /* ─── WRAP ─── */
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 max(24px,env(safe-area-inset-left,0px)); position: relative; z-index: 1; }
+
+  /* ─── SECTION HEADER ─── */
+  .sh { display: flex; align-items: baseline; gap: 10px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .sh-title { font-family: var(--heading); font-size: 16px; font-weight: 600; margin: 0; color: var(--text); }
+  .sh-count { font-family: var(--mono); font-size: 10px; color: var(--text-3); }
+
+  /* ─── CVE CARD GRID ─── */
+  .cve-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+    gap: 14px; margin-bottom: 56px;
+  }
+  .cve-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--r);
+    padding: 20px; text-decoration: none; display: flex; flex-direction: column; gap: 10px;
+    transition: border-color .2s, background .2s, transform .15s; position: relative; overflow: hidden;
+  }
+  .cve-card:hover { border-color: var(--border-b); background: var(--card-hover); transform: translateY(-2px); }
+  .card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .sev {
+    font-family: var(--mono); font-size: 10px; font-weight: 500;
+    letter-spacing: .07em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px;
+  }
+  .sev-critical { color: var(--critical); background: var(--critical-bg); }
+  .sev-high { color: var(--high); background: var(--high-bg); }
+  .sev-low { color: var(--low); background: var(--low-bg); }
+  .cve-id { font-family: var(--mono); font-size: 11px; color: var(--text-2); }
+  .card-sw { display: flex; align-items: center; gap: 7px; }
+  .sw-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .card-sw span { font-family: var(--heading); font-size: 12px; font-weight: 600; color: var(--text-2); }
+  .card-title { font-family: var(--heading); font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.35; margin: 0; }
+  .card-date { font-size: 11px; color: var(--text-3); font-family: var(--mono); margin-top: auto; }
+  .card-arrow { color: var(--accent); font-size: 11px; font-family: var(--mono); display: inline-flex; align-items: center; gap: 4px; transition: gap .15s; }
+  .cve-card:hover .card-arrow { gap: 8px; }
+
+  /* ─── CVE SECTION ─── */
+  .cve-section { border-top: 1px solid var(--border); padding: 56px 0 72px; scroll-margin-top: 60px; }
+  .cve-hdr { margin-bottom: 36px; }
+  .cve-hdr-badges { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+  .badge-cwe {
+    font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 4px;
+    background: rgba(99,102,241,0.1); color: #818cf8;
+  }
+  .sw-logo-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .sw-logo { height: 36px; width: auto; border-radius: 6px; border: 1px solid var(--border); background: #fff; padding: 3px; }
+  .cve-title {
+    font-family: var(--heading); font-size: clamp(18px,2.5vw,26px); font-weight: 700;
+    line-height: 1.2; margin: 0 0 20px; text-wrap: balance; color: #fff;
+  }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap: 10px; }
+  .meta-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 12px; }
+  .meta-label { font-family: var(--mono); font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 3px; }
+  .meta-value { font-family: var(--mono); font-size: 12px; color: var(--text); font-weight: 500; }
+  .meta-value.cvss { color: var(--accent); }
+
+  /* ─── REPORT SECTIONS ─── */
+  .rpt { margin-bottom: 40px; }
+  .rh2 {
+    font-family: var(--heading); font-size: 15px; font-weight: 600; color: var(--text);
+    margin: 0 0 14px; display: flex; align-items: center; gap: 9px;
+  }
+  .rh2::before {
+    content: attr(data-n); font-family: var(--mono); font-size: 10px;
+    color: var(--accent); background: var(--accent-dim); padding: 1px 7px; border-radius: 3px;
+  }
+
+  .callout {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: var(--r-sm);
+    padding: 14px 16px; font-size: 13px; color: var(--text-2); line-height: 1.65;
+  }
+  .callout strong { color: var(--text); }
+
+  ul.dl { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 7px; }
+  ul.dl li { display: flex; align-items: flex-start; gap: 9px; font-size: 13px; color: var(--text-2); }
+  ul.dl li::before { content: '→'; color: var(--accent); font-family: var(--mono); flex-shrink: 0; margin-top: 1px; }
+  ul.dl li strong { color: var(--text); }
+
+  .trow { display: grid; grid-template-columns: 150px 1fr; gap: 6px; align-items: start; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .trow:last-child { border-bottom: none; }
+  .tlbl { font-family: var(--mono); color: var(--text-3); font-size: 10px; padding-top: 1px; }
+  .tval { color: var(--text-2); }
+  code { font-family: var(--mono); font-size: 11.5px; color: var(--accent); background: var(--accent-dim); padding: 1px 5px; border-radius: 3px; }
+
+  /* ─── CODE BLOCK ─── */
+  .cb { background: #030508; border: 1px solid var(--border); border-radius: var(--r); overflow-x: auto; margin: 14px 0; }
+  .cb pre { margin: 0; padding: 16px 18px; font-family: var(--mono); font-size: 12px; line-height: 1.7; color: #c0d0ee; }
+  .cb .kw { color: #818cf8; }
+  .cb .fn { color: #67e8f9; }
+  .cb .st { color: #86efac; }
+  .cb .cm { color: #3d4f65; font-style: italic; }
+  .cb .vr { color: #fca5a5; }
+
+  /* ─── POC STEPS ─── */
+  .poc-steps { display: flex; flex-direction: column; gap: 24px; }
+  .poc-step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+  .poc-sh { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--card); }
+  .poc-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent-dim); color: var(--accent);
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .poc-num.crit { background: var(--critical-bg); color: var(--critical); }
+  .poc-stitle { font-family: var(--heading); font-size: 13px; font-weight: 600; color: var(--text); }
+  .poc-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .poc-imgs { display: flex; flex-direction: column; gap: 8px; }
+  .poc-img { border-radius: var(--r-sm); border: 1px solid var(--border); width: 100%; height: auto; display: block; cursor: zoom-in; transition: border-color .15s; }
+  .poc-img:hover { border-color: var(--border-b); }
+
+  /* ─── TIMELINE TABLE ─── */
+  .tl-wrap { overflow-x: auto; }
+  .tl-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .tl-table th { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .1em; color: var(--text-3); text-align: left; padding: 7px 12px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .tl-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text-2); vertical-align: top; }
+  .tl-table tr:last-child td { border-bottom: none; }
+  .tl-table td:first-child { font-family: var(--mono); font-size: 10px; color: var(--text-3); white-space: nowrap; }
+  .tl-table td:nth-child(2) { font-weight: 500; color: var(--text); }
+  .tl-table a { color: var(--accent); text-decoration: none; }
+  .tl-table a:hover { text-decoration: underline; }
+
+  /* ─── REFS ─── */
+  .refs { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 5px; }
+  .refs li { display: flex; align-items: center; gap: 7px; }
+  .refs li::before { content: '⬥'; color: var(--accent); font-size: 9px; }
+  .refs a { font-family: var(--mono); font-size: 11px; color: var(--text-2); text-decoration: none; word-break: break-all; }
+  .refs a:hover { color: var(--accent); }
+
+  /* ─── LIGHTBOX ─── */
+  #lb { position: fixed; inset: 0; z-index: 600; background: rgba(0,0,0,.96); display: none; align-items: center; justify-content: center; cursor: zoom-out; }
+  #lb.open { display: flex; }
+  #lb img { max-width: 95vw; max-height: 95vh; border-radius: 4px; object-fit: contain; }
+
+  /* ─── FOOTER ─── */
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 22px max(24px,env(safe-area-inset-left,0px));
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    color: var(--text-3); font-size: 11px; font-family: var(--mono); position: relative; z-index: 1;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .site-footer a { color: var(--accent); text-decoration: none; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .hero { padding: 36px 0 28px; }
+    .hero h1 { font-size: 24px; }
+    .nav-links { display: none; }
+    .cve-grid { grid-template-columns: 1fr; }
+    .trow { grid-template-columns: 1fr; gap: 2px; }
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { .cve-card, .poc-img { transition: none; } }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a class="nav-logo" href="../index.html">hidden<span>@</span>cry<span>:~$</span></a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">cve</span>
+  <div class="nav-links">
+    <a href="#overview">overview</a>
+    <a href="#CVE-2026-52778">CVE-52778</a>
+    <a href="#CVE-2026-46656">CVE-46656</a>
+    <a href="#CVE-2026-46657">CVE-46657</a>
+    <a href="#CVE-2026-48488">CVE-48488</a>
+  </div>
+  <a class="nav-back" href="../index.html#writeups">← Portfolio</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">// Responsible Disclosure</div>
+  <h1>CVE <em>Advisories</em></h1>
+  <p class="hero-desc">Original vulnerabilities discovered, reported, and coordinated to full patch. All CVEs assigned and publicly disclosed after vendor remediation.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">4</span><span class="stat-label">CVEs</span></div>
+    <div class="stat"><span class="stat-num">3</span><span class="stat-label">Products</span></div>
+    <div class="stat"><span class="stat-num" style="color:var(--critical)">1</span><span class="stat-label">Critical</span></div>
+    <div class="stat"><span class="stat-num" style="color:var(--high)">2</span><span class="stat-label">High</span></div>
+    <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Patched</span></div>
+  </div>
+</div>
+
+<main>
+<div class="wrap">
+
+  <!-- OVERVIEW GRID -->
+  <div id="overview" style="scroll-margin-top:60px; padding-top:40px;">
+    <div class="sh">
+      <h2 class="sh-title">All Advisories</h2>
+      <span class="sh-count">4 CVEs · 2026</span>
+    </div>
+    <div class="cve-grid">
+
+      <a class="cve-card" href="#CVE-2026-52778">
+        <div class="card-top">
+          <span class="cve-id">CVE-2026-52778</span>
+          <span class="sev sev-critical">CRITICAL 9.8</span>
+        </div>
+        <div class="card-sw"><span class="sw-dot" style="background:#10b981"></span><span>YesWiki ≤ 4.6.5</span></div>
+        <p class="card-title">Unsafe eval() in Formula Calculator — RCE &amp; DoS</p>
+        <div class="card-date">Discovered May 23, 2026 · Patched Jun 2, 2026</div>
+        <span class="card-arrow">View report →</span>
+      </a>
+
+      <a class="cve-card" href="#CVE-2026-46656">
+        <div class="card-top">
+          <span class="cve-id">CVE-2026-46656</span>
+          <span class="sev sev-high">HIGH 8.8</span>
+        </div>
+        <div class="card-sw"><span class="sw-dot" style="background:#3b82f6"></span><span>Bludit CMS &lt; 3.22.0</span></div>
+        <p class="card-title">Broken Access Control — Persistent Ghost Sessions</p>
+        <div class="card-date">Discovered Apr 25, 2026 · Patched May 11, 2026</div>
+        <span class="card-arrow">View report →</span>
+      </a>
+
+      <a class="cve-card" href="#CVE-2026-46657">
+        <div class="card-top">
+          <span class="cve-id">CVE-2026-46657</span>
+          <span class="sev sev-high">HIGH 7.1</span>
+        </div>
+        <div class="card-sw"><span class="sw-dot" style="background:#3b82f6"></span><span>Bludit CMS &lt; 3.22.0</span></div>
+        <p class="card-title">Auth Tokens Not Revoked upon Account Disablement</p>
+        <div class="card-date">Discovered Apr 25, 2026 · Patched May 11, 2026</div>
+        <span class="card-arrow">View report →</span>
+      </a>
+
+      <a class="cve-card" href="#CVE-2026-48488">
+        <div class="card-top">
+          <span class="cve-id">CVE-2026-48488</span>
+          <span class="sev sev-low">LOW</span>
+        </div>
+        <div class="card-sw"><span class="sw-dot" style="background:#f59e0b"></span><span>phpMyFAQ ≤ 4.1.3</span></div>
+        <p class="card-title">Weak Cryptography — SHA-1 for Attachment Passwords</p>
+        <div class="card-date">Discovered May 20, 2026 · Patched May 25, 2026</div>
+        <span class="card-arrow">View report →</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ═══ CVE-2026-52778 ═══ -->
+  <section class="cve-section" id="CVE-2026-52778">
+    <div class="cve-hdr">
+      <div class="cve-hdr-badges">
+        <span class="sev sev-critical">CRITICAL</span>
+        <span class="badge-cwe">CWE-94</span>
+        <span class="badge-cwe">CWE-1333</span>
+      </div>
+      <div class="sw-logo-wrap">
+        <img class="sw-logo" src="../YesWiki/CVE-2026-52778/images/0.png" alt="YesWiki">
+      </div>
+      <h2 class="cve-title">CVE-2026-52778 — Unsafe eval() in Formula Calculator:<br>Remote Code Execution &amp; Denial of Service</h2>
+      <div class="meta-grid">
+        <div class="meta-item"><div class="meta-label">CVE ID</div><div class="meta-value">CVE-2026-52778</div></div>
+        <div class="meta-item"><div class="meta-label">Software</div><div class="meta-value">YesWiki</div></div>
+        <div class="meta-item"><div class="meta-label">Affected</div><div class="meta-value">≤ 4.6.5</div></div>
+        <div class="meta-item"><div class="meta-label">Patched</div><div class="meta-value">4.6.6</div></div>
+        <div class="meta-item"><div class="meta-label">CVSS 3.1</div><div class="meta-value cvss">9.8 / 10</div></div>
+        <div class="meta-item"><div class="meta-label">Discovered</div><div class="meta-value">May 23, 2026</div></div>
+      </div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="01">Executive Summary</h3>
+      <div class="callout">
+        An unsafe execution vulnerability exists in the Bazar form field calculator (<code>CalcField.php</code>) of YesWiki. The application sanitizes user-defined formulas using a <strong>complex recursive regular expression</strong> before passing them to PHP's <code>eval()</code>. This is inherently flawed: it is vulnerable to <strong>ReDoS / Stack Overflow</strong> (guaranteed server crash), and any regex bypass leads directly to <strong>arbitrary PHP code execution</strong>.
+      </div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="02">Impact</h3>
+      <ul class="dl">
+        <li><strong>Confidentiality: HIGH</strong> — Read sensitive files (<code>/etc/passwd</code>, <code>.env</code>).</li>
+        <li><strong>Integrity: HIGH</strong> — Modify application files, inject backdoors, alter database content.</li>
+        <li><strong>Availability: HIGH</strong> — Crash the web service immediately via ReDoS / Segmentation Fault.</li>
+      </ul>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="03">Technical Analysis</h3>
+      <div class="trow"><span class="tlbl">File</span><span class="tval"><code>tools/bazar/fields/CalcField.php</code></span></div>
+      <div class="trow"><span class="tlbl">Method</span><span class="tval"><code>formatValuesBeforeSave($entry)</code></span></div>
+      <div class="trow"><span class="tlbl">Root Cause</span><span class="tval">Recursive regex guard on <code>eval()</code> — exhausts PCRE stack on deep nesting, and any bypass results in arbitrary PHP execution.</span></div>
+      <div class="cb"><pre><span class="vr">$regexp</span> = <span class="st">'/^((' . $number . '|' . $functions . '\s*\((?1)+\)|\((?1)+\))(?:' . $operators . '(?1))?)+$/'</span>;
+
+<span class="kw">if</span> (<span class="fn">preg_match</span>(<span class="vr">$regexp</span>, <span class="vr">$formula</span>)) {
+    <span class="vr">$formula</span> = <span class="fn">preg_replace</span>(<span class="st">'!pi|π!'</span>, <span class="st">'pi()'</span>, <span class="vr">$formula</span>);
+    <span class="kw">try</span> {
+        <span class="fn">eval</span>(<span class="st">"\$value = </span><span class="vr">$formula</span><span class="st">;"</span>);  <span class="cm">// VULNERABLE</span></pre></div>
+      <ul class="dl" style="margin-top:14px">
+        <li><strong>PCRE Stack Overflow / ReDoS</strong> — Pattern <code>(?1)+</code> recurses on the system stack. Thousands of nested parentheses trigger either recursion limit exhaust or a Segmentation Fault, crashing PHP-FPM.</li>
+        <li><strong>Complete trust in eval()</strong> — Complex regex sanitizers for <code>eval()</code> are consistently bypassed historically via edge-case syntaxes, encoding tricks, or PCRE version bugs.</li>
+      </ul>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="04">Proof of Concept</h3>
+      <div class="poc-steps">
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num crit">A</div><div class="poc-stitle">Remote Denial of Service — Server Crash via ReDoS</div></div>
+          <div class="poc-body">
+            <p style="color:var(--text-2);font-size:13px;margin:0">Inject a deeply nested formula into a Bazar Calc field (multiply to 2000–5000 iterations based on the server's <code>pcre.recursion_limit</code>):</p>
+            <div class="cb"><pre>((((((((((((((((((((((((((((((((((((((((((1+1))))))))))))))))))))))))))))))))))))))))))))</pre></div>
+            <p style="color:var(--text-2);font-size:13px;margin:0">The PCRE engine runs out of stack memory → immediate crash of the PHP-FPM worker → service unavailable.</p>
+          </div>
+        </div>
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num crit">B</div><div class="poc-stitle">Logical Bypass to RCE — Arbitrary PHP Execution</div></div>
+          <div class="poc-body">
+            <p style="color:var(--text-2);font-size:13px;margin:0">If the regex is bypassed (via PCRE version-specific bugs or fuzzing), the payload executes as native PHP:</p>
+            <div class="cb"><pre><span class="fn">abs</span>(1) + <span class="fn">system</span>(<span class="st">'id'</span>)</pre></div>
+            <p style="color:var(--text-2);font-size:13px;margin:0">Grants attacker <code>www-data</code> privileges → full host compromise.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="05">Remediation</h3>
+      <ul class="dl">
+        <li>Replace <code>eval()</code> with a dedicated, sandboxed AST math parser (e.g., <code>symfony/expression-language</code> or <code>mossadal/math-parser</code>) that cannot invoke system calls.</li>
+        <li>As an interim measure, disable the CalcField component until the eval() path is fully replaced.</li>
+      </ul>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="06">Timeline</h3>
+      <div class="tl-wrap"><table class="tl-table">
+        <thead><tr><th>Date</th><th>Event</th><th>Reference</th></tr></thead>
+        <tbody>
+          <tr><td>May 23, 2026</td><td>Initial Discovery</td><td>Unsafe eval() in CalcField.php</td></tr>
+          <tr><td>May 23, 2026</td><td>Private Disclosure</td><td><a href="https://github.com/YesWiki/yeswiki/security/advisories/GHSA-px5m-h76g-p7p8" target="_blank" rel="noopener">GHSA-px5m-h76g-p7p8</a></td></tr>
+          <tr><td>May 25, 2026</td><td>Patch Merged</td><td><a href="https://github.com/YesWiki/yeswiki/commit/dd2bd8fb099de0d21504bda8a810693b3fcb8e52" target="_blank" rel="noopener">Commit dd2bd8f</a></td></tr>
+          <tr><td>Jun 2, 2026</td><td>Release v4.6.6</td><td>Public release</td></tr>
+          <tr><td>Jun 8, 2026</td><td>CVE Assigned &amp; Public Disclosure</td><td>CVE-2026-52778</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="07">References</h3>
+      <ul class="refs">
+        <li><a href="https://github.com/YesWiki/yeswiki/security/advisories/GHSA-px5m-h76g-p7p8" target="_blank" rel="noopener">GHSA-px5m-h76g-p7p8</a></li>
+        <li><a href="https://github.com/YesWiki/yeswiki/commit/dd2bd8fb099de0d21504bda8a810693b3fcb8e52" target="_blank" rel="noopener">Commit dd2bd8f</a></li>
+        <li><a href="https://www.cve.org/CVERecord?id=CVE-2026-52778" target="_blank" rel="noopener">cve.org/CVERecord?id=CVE-2026-52778</a></li>
+        <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2026-52778" target="_blank" rel="noopener">nvd.nist.gov/vuln/detail/CVE-2026-52778</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══ CVE-2026-46656 ═══ -->
+  <section class="cve-section" id="CVE-2026-46656">
+    <div class="cve-hdr">
+      <div class="cve-hdr-badges">
+        <span class="sev sev-high">HIGH</span>
+        <span class="badge-cwe">CWE-285</span>
+        <span class="badge-cwe">CWE-613</span>
+      </div>
+      <div class="sw-logo-wrap">
+        <img class="sw-logo" src="../BluditCMS/CVE-2026-46656/images/0.png" alt="Bludit CMS">
+      </div>
+      <h2 class="cve-title">CVE-2026-46656 — Improper Authorization leading to Persistent Ghost Sessions</h2>
+      <div class="meta-grid">
+        <div class="meta-item"><div class="meta-label">CVE ID</div><div class="meta-value">CVE-2026-46656</div></div>
+        <div class="meta-item"><div class="meta-label">Software</div><div class="meta-value">Bludit CMS</div></div>
+        <div class="meta-item"><div class="meta-label">Affected</div><div class="meta-value">&lt; 3.22.0</div></div>
+        <div class="meta-item"><div class="meta-label">Patched</div><div class="meta-value">3.22.0</div></div>
+        <div class="meta-item"><div class="meta-label">CVSS 3.1</div><div class="meta-value cvss">8.8 / 10</div></div>
+        <div class="meta-item"><div class="meta-label">Discovered</div><div class="meta-value">Apr 25, 2026</div></div>
+      </div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="01">Executive Summary</h3>
+      <div class="callout">Bludit CMS is vulnerable to a critical Broken Access Control flaw where active sessions remain valid even after the corresponding user account has been physically deleted from the database. This <strong>"Ghost Session"</strong> allows revoked users to maintain full unauthorized access — including creating new administrator accounts.</div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="02">Impact</h3>
+      <ul class="dl">
+        <li>Deleted users retain full session access — <strong>Ghost Sessions persist indefinitely</strong> after account removal.</li>
+        <li>A revoked admin can <strong>create new administrator accounts</strong>, regaining permanent access and bypassing all revocation.</li>
+        <li>Actions logged to non-existent entities — <strong>audit trail breaks</strong> completely.</li>
+      </ul>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="03">Technical Analysis</h3>
+      <div class="trow"><span class="tlbl">Location</span><span class="tval"><code>bl-kernel/users.class.php</code> → <code>isLogged()</code></span></div>
+      <div class="trow"><span class="tlbl">CVSS Vector</span><span class="tval"><code>AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H</code></span></div>
+      <div class="trow"><span class="tlbl">Root Cause</span><span class="tval">The kernel trusts <code>$_SESSION</code> and never re-validates user existence in the database on subsequent requests.</span></div>
+      <div style="margin-top:14px"><img src="../BluditCMS/CVE-2026-46656/images/22.png" alt="Vulnerable code" class="poc-img" onclick="lb(this.src)"></div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="04">Proof of Concept</h3>
+      <div class="callout"><strong>Scenario:</strong> "The Immortal Administrator" — Backdoor Creation via Ghost Session.</div>
+      <div class="poc-steps">
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num">1</div><div class="poc-stitle">Administrator creates <code>admin2</code> (Admin) and <code>author</code> (Author).</div></div>
+          <div class="poc-body"><div class="poc-imgs">
+            <img src="../BluditCMS/CVE-2026-46656/images/2.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46656/images/3.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46656/images/4.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46656/images/5.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46656/images/6.png" alt="" class="poc-img" onclick="lb(this.src)">
+          </div></div>
+        </div>
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num">2</div><div class="poc-stitle">Main administrator deletes both accounts using "Delete user and content".</div></div>
+          <div class="poc-body"><div class="poc-imgs">
+            <img src="../BluditCMS/CVE-2026-46656/images/12.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46656/images/13.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46656/images/14.png" alt="" class="poc-img" onclick="lb(this.src)">
+          </div></div>
+        </div>
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num">3</div><div class="poc-stitle">Database Audit — entries completely removed from the JSON database.</div></div>
+          <div class="poc-body"><div class="poc-imgs">
+            <img src="../BluditCMS/CVE-2026-46656/images/15.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46656/images/16.png" alt="" class="poc-img" onclick="lb(this.src)">
+          </div></div>
+        </div>
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num">4</div><div class="poc-stitle">Persistence Test — deleted <code>admin2</code> still using their Ghost Session successfully publishes a new article.</div></div>
+          <div class="poc-body"><div class="poc-imgs">
+            <img src="../BluditCMS/CVE-2026-46656/images/17.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46656/images/18.png" alt="" class="poc-img" onclick="lb(this.src)">
+          </div></div>
+        </div>
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num">5</div><div class="poc-stitle">Privilege Escalation — deleted <code>admin2</code> accesses the "Add New User" form.</div></div>
+          <div class="poc-body"><div class="poc-imgs">
+            <img src="../BluditCMS/CVE-2026-46656/images/19.png" alt="" class="poc-img" onclick="lb(this.src)">
+          </div></div>
+        </div>
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num">6</div><div class="poc-stitle">Full Compromise — creates backdoor admin account <code>created_from_deleted_admin2</code>.</div></div>
+          <div class="poc-body"><div class="poc-imgs">
+            <img src="../BluditCMS/CVE-2026-46656/images/20.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46656/images/21.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46656/images/23.png" alt="" class="poc-img" onclick="lb(this.src)">
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="05">Remediation</h3>
+      <ul class="dl">
+        <li>Implement server-side session invalidation that cross-checks user existence in the database on each request.</li>
+        <li>Update <code>disableUser()</code> in <code>bl-kernel/users.class.php</code> to clear <code>tokenAuth</code> and <code>tokenRemember</code> upon account deletion.</li>
+      </ul>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="06">Timeline</h3>
+      <div class="tl-wrap"><table class="tl-table">
+        <thead><tr><th>Date</th><th>Event</th><th>Reference</th></tr></thead>
+        <tbody>
+          <tr><td>Apr 25–27, 2026</td><td>Initial Discovery</td><td>Session persistence identified</td></tr>
+          <tr><td>Apr 30, 2026</td><td>Private Disclosure</td><td><a href="https://github.com/bludit/bludit/security/advisories/GHSA-q42h-wpg8-5wwf" target="_blank" rel="noopener">GHSA-q42h-wpg8-5wwf</a></td></tr>
+          <tr><td>May 1, 2026</td><td>Maintainer Response</td><td><a href="https://github.com/bludit/bludit/pull/1705" target="_blank" rel="noopener">PR #1705</a></td></tr>
+          <tr><td>May 9, 2026</td><td>Patch Merged</td><td>Integrated into master</td></tr>
+          <tr><td>May 11, 2026</td><td>Release v3.22.0</td><td>Credit awarded</td></tr>
+          <tr><td>May 15, 2026</td><td>CVE Assigned</td><td>CVE-2026-46656 by GitHub CNA</td></tr>
+          <tr><td>Jun 8, 2026</td><td>Public Disclosure</td><td>Published to global databases</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="07">References</h3>
+      <ul class="refs">
+        <li><a href="https://github.com/bludit/bludit/security/advisories/GHSA-rpq2-j9w3-h4jw" target="_blank" rel="noopener">GHSA-rpq2-j9w3-h4jw</a></li>
+        <li><a href="https://github.com/bludit/bludit/commit/7931d1c55a3cc535911a9901c328f0197afe1c9f" target="_blank" rel="noopener">Commit 7931d1c</a></li>
+        <li><a href="https://www.cve.org/CVERecord?id=CVE-2026-46656" target="_blank" rel="noopener">cve.org/CVERecord?id=CVE-2026-46656</a></li>
+        <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2026-46656" target="_blank" rel="noopener">nvd.nist.gov/vuln/detail/CVE-2026-46656</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══ CVE-2026-46657 ═══ -->
+  <section class="cve-section" id="CVE-2026-46657">
+    <div class="cve-hdr">
+      <div class="cve-hdr-badges">
+        <span class="sev sev-high">HIGH</span>
+        <span class="badge-cwe">CWE-613</span>
+        <span class="badge-cwe">CWE-212</span>
+      </div>
+      <div class="sw-logo-wrap">
+        <img class="sw-logo" src="../BluditCMS/CVE-2026-46657/images/0.png" alt="Bludit CMS">
+      </div>
+      <h2 class="cve-title">CVE-2026-46657 — Persistent Authentication Tokens Not Revoked upon Account Disablement</h2>
+      <div class="meta-grid">
+        <div class="meta-item"><div class="meta-label">CVE ID</div><div class="meta-value">CVE-2026-46657</div></div>
+        <div class="meta-item"><div class="meta-label">Software</div><div class="meta-value">Bludit CMS</div></div>
+        <div class="meta-item"><div class="meta-label">Affected</div><div class="meta-value">&lt; 3.22.0</div></div>
+        <div class="meta-item"><div class="meta-label">Patched</div><div class="meta-value">3.22.0</div></div>
+        <div class="meta-item"><div class="meta-label">CVSS 3.1</div><div class="meta-value cvss">7.1 / 10</div></div>
+        <div class="meta-item"><div class="meta-label">Discovered</div><div class="meta-value">Apr 25, 2026</div></div>
+      </div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="01">Executive Summary</h3>
+      <div class="callout">When an administrator disables a user account, Bludit fails to invalidate the <strong>tokenAuth</strong> and <strong>tokenRemember</strong> fields. Any user with a pre-existing "Remember Me" cookie can bypass account disablement and maintain a valid authenticated state indefinitely.</div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="02">Impact</h3>
+      <ul class="dl">
+        <li>Disabled accounts remain accessible via <strong>persistent "Remember Me" cookies</strong>.</li>
+        <li>Standard password login is blocked (password prefixed with <code>!</code>), but the <strong>token auth path is completely bypassed</strong>.</li>
+        <li>Revoked users maintain unauthorized access indefinitely until tokens are manually cleared.</li>
+      </ul>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="03">Technical Analysis</h3>
+      <div class="trow"><span class="tlbl">Location</span><span class="tval"><code>bl-kernel/users.class.php</code> → <code>disableUser()</code></span></div>
+      <div class="trow"><span class="tlbl">CVSS Vector</span><span class="tval"><code>AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:L/A:N</code></span></div>
+      <div class="trow"><span class="tlbl">Root Cause</span><span class="tval"><code>disableUser()</code> correctly prefixes the password with <code>!</code> but leaves <code>tokenAuth</code> and <code>tokenRemember</code> intact in <code>bl-content/databases/users.php</code>. The "Remember Me" subsystem validates tokens directly against the DB without checking the disabled flag.</span></div>
+      <div style="margin-top:14px"><img src="../BluditCMS/CVE-2026-46657/images/1.png" alt="Vulnerable disableUser() code" class="poc-img" onclick="lb(this.src)"></div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="04">Proof of Concept</h3>
+      <div class="poc-steps">
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num">1</div><div class="poc-stitle">Create <code>admin2</code> and <code>author</code>, both logged in with "Remember Me".</div></div>
+          <div class="poc-body"><div class="poc-imgs">
+            <img src="../BluditCMS/CVE-2026-46657/images/2.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46657/images/3.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46657/images/4.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46657/images/5.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46657/images/6.png" alt="" class="poc-img" onclick="lb(this.src)">
+          </div></div>
+        </div>
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num">2</div><div class="poc-stitle">Main administrator <strong>disables</strong> both accounts. System confirms disabled.</div></div>
+          <div class="poc-body"><div class="poc-imgs">
+            <img src="../BluditCMS/CVE-2026-46657/images/8.png" alt="" class="poc-img" onclick="lb(this.src)">
+          </div></div>
+        </div>
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num">3</div><div class="poc-stitle">Database check — password invalidated (<code>!</code>) but tokens <code>tokenAuth</code> + <code>tokenRemember</code> unchanged.</div></div>
+          <div class="poc-body"><div class="poc-imgs">
+            <img src="../BluditCMS/CVE-2026-46657/images/9.png" alt="" class="poc-img" onclick="lb(this.src)">
+          </div></div>
+        </div>
+        <div class="poc-step">
+          <div class="poc-sh"><div class="poc-num">4</div><div class="poc-stitle">The disabled <code>author</code> successfully publishes a new post via the persistent token.</div></div>
+          <div class="poc-body"><div class="poc-imgs">
+            <img src="../BluditCMS/CVE-2026-46657/images/10.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="../BluditCMS/CVE-2026-46657/images/11.png" alt="" class="poc-img" onclick="lb(this.src)">
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="05">Remediation</h3>
+      <ul class="dl">
+        <li>Update <code>disableUser()</code> in <code>bl-kernel/users.class.php</code> to explicitly clear <code>tokenAuth</code> and <code>tokenRemember</code> in the JSON database when disabling an account.</li>
+      </ul>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="06">Timeline</h3>
+      <div class="tl-wrap"><table class="tl-table">
+        <thead><tr><th>Date</th><th>Event</th><th>Reference</th></tr></thead>
+        <tbody>
+          <tr><td>Apr 25–27, 2026</td><td>Initial Discovery</td><td>Persistent token bypass identified</td></tr>
+          <tr><td>Apr 30, 2026</td><td>Private Disclosure</td><td><a href="https://github.com/bludit/bludit/security/advisories/GHSA-q42h-wpg8-5wwf" target="_blank" rel="noopener">GHSA-q42h-wpg8-5wwf</a></td></tr>
+          <tr><td>May 1, 2026</td><td>Maintainer Response</td><td><a href="https://github.com/bludit/bludit/pull/1705" target="_blank" rel="noopener">PR #1705</a></td></tr>
+          <tr><td>May 11, 2026</td><td>Release v3.22.0</td><td>Credit awarded</td></tr>
+          <tr><td>May 13, 2026</td><td>Advisory Split</td><td><a href="https://github.com/bludit/bludit/security/advisories/GHSA-ggqg-xvx6-hgwh" target="_blank" rel="noopener">GHSA-ggqg-xvx6-hgwh</a></td></tr>
+          <tr><td>May 15, 2026</td><td>CVE Assigned</td><td>CVE-2026-46657 by GitHub CNA</td></tr>
+          <tr><td>Jun 8, 2026</td><td>Public Disclosure</td><td>Published to global databases</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="07">References</h3>
+      <ul class="refs">
+        <li><a href="https://github.com/bludit/bludit/security/advisories/GHSA-ggqg-xvx6-hgwh" target="_blank" rel="noopener">GHSA-ggqg-xvx6-hgwh</a></li>
+        <li><a href="https://github.com/bludit/bludit/pull/1705/changes/60d90b6c84993764eee5f9d54b055c65706556b7" target="_blank" rel="noopener">Commit diff — PR #1705</a></li>
+        <li><a href="https://www.cve.org/CVERecord?id=CVE-2026-46657" target="_blank" rel="noopener">cve.org/CVERecord?id=CVE-2026-46657</a></li>
+        <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2026-46657" target="_blank" rel="noopener">nvd.nist.gov/vuln/detail/CVE-2026-46657</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══ CVE-2026-48488 ═══ -->
+  <section class="cve-section" id="CVE-2026-48488">
+    <div class="cve-hdr">
+      <div class="cve-hdr-badges">
+        <span class="sev sev-low">LOW</span>
+        <span class="badge-cwe">CWE-328</span>
+      </div>
+      <div class="sw-logo-wrap">
+        <img class="sw-logo" src="../phpMyFAQ/CVE-2026-48488/images/0.png" alt="phpMyFAQ">
+      </div>
+      <h2 class="cve-title">CVE-2026-48488 — Weak Cryptography: SHA-1 Used for Attachment Password Hashing</h2>
+      <div class="meta-grid">
+        <div class="meta-item"><div class="meta-label">CVE ID</div><div class="meta-value">CVE-2026-48488</div></div>
+        <div class="meta-item"><div class="meta-label">Software</div><div class="meta-value">phpMyFAQ</div></div>
+        <div class="meta-item"><div class="meta-label">Affected</div><div class="meta-value">≤ 4.1.3</div></div>
+        <div class="meta-item"><div class="meta-label">Patched</div><div class="meta-value">4.1.4</div></div>
+        <div class="meta-item"><div class="meta-label">Severity</div><div class="meta-value" style="color:var(--low)">LOW</div></div>
+        <div class="meta-item"><div class="meta-label">Discovered</div><div class="meta-value">May 20, 2026</div></div>
+      </div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="01">Executive Summary</h3>
+      <div class="callout">Attachment passwords in phpMyFAQ are hashed using <strong>SHA-1</strong>, a cryptographically broken algorithm since the SHAttered collision attack (2017). The affected component is <code>phpmyfaq/src/phpMyFAQ/Attachment/AbstractAttachment.php</code>.</div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="02">Impact</h3>
+      <ul class="dl">
+        <li>An attacker can generate <strong>SHA-1 collisions</strong> to bypass attachment protection.</li>
+        <li>Risk of <strong>password cracking</strong> if the database is compromised — estimated under 1 minute with modern hardware.</li>
+      </ul>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="03">Technical Analysis</h3>
+      <div class="trow"><span class="tlbl">CWE</span><span class="tval">CWE-328 (Use of Weak Hash)</span></div>
+      <div class="trow"><span class="tlbl">Location</span><span class="tval"><code>phpmyfaq/src/phpMyFAQ/Attachment/AbstractAttachment.php</code></span></div>
+      <div style="margin-top:14px"><img src="../phpMyFAQ/CVE-2026-48488/images/1.png" alt="SHA-1 code in AbstractAttachment.php" class="poc-img" onclick="lb(this.src)"></div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="04">Remediation</h3>
+      <p style="color:var(--text-2);font-size:13px;margin:0 0 10px">Replace SHA-1 with PHP's native <code>password_hash()</code> / <code>password_verify()</code> (bcrypt):</p>
+      <div class="cb"><pre><span class="kw">public function</span> <span class="fn">setPassword</span>(<span class="kw">string</span> <span class="vr">$password</span>): <span class="kw">void</span>
+{
+    <span class="vr">$this</span>->passwordHash = <span class="fn">password_hash</span>(<span class="vr">$password</span>, <span class="st">PASSWORD_BCRYPT</span>);
+}
+
+<span class="kw">public function</span> <span class="fn">verifyPassword</span>(<span class="kw">string</span> <span class="vr">$plainPassword</span>): <span class="kw">bool</span>
+{
+    <span class="kw">return</span> <span class="fn">password_verify</span>(<span class="vr">$plainPassword</span>, <span class="vr">$this</span>->passwordHash);
+}</pre></div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="05">Timeline</h3>
+      <div class="tl-wrap"><table class="tl-table">
+        <thead><tr><th>Date</th><th>Event</th><th>Reference</th></tr></thead>
+        <tbody>
+          <tr><td>May 20, 2026</td><td>Discovery &amp; Private Disclosure</td><td><a href="https://github.com/thorsten/phpMyFAQ/security/advisories/GHSA-58fg-62fg-3fcj" target="_blank" rel="noopener">GHSA-58fg-62fg-3fcj</a></td></tr>
+          <tr><td>May 21, 2026</td><td>CVE Assigned</td><td>CVE-2026-48488 by GitHub CNA</td></tr>
+          <tr><td>May 25, 2026</td><td>Release v4.1.4</td><td>Patch published</td></tr>
+          <tr><td>Jun 8, 2026</td><td>Public Disclosure</td><td>Published to CVE databases</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="rpt">
+      <h3 class="rh2" data-n="06">References</h3>
+      <ul class="refs">
+        <li><a href="https://github.com/thorsten/phpMyFAQ/security/advisories/GHSA-58fg-62fg-3fcj" target="_blank" rel="noopener">GHSA-58fg-62fg-3fcj</a></li>
+        <li><a href="https://www.cve.org/CVERecord?id=CVE-2026-48488" target="_blank" rel="noopener">cve.org/CVERecord?id=CVE-2026-48488</a></li>
+        <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2026-48488" target="_blank" rel="noopener">nvd.nist.gov/vuln/detail/CVE-2026-48488</a></li>
+      </ul>
+    </div>
+  </section>
+
+</div><!-- /wrap -->
+</main>
+
+<!-- LIGHTBOX -->
+<div id="lb" onclick="this.classList.remove('open')"><img src="" alt="Zoomed screenshot"></div>
+
+<footer class="site-footer">
+  <span><a href="../index.html">HiddenCry</a> — CVE Advisories</span>
+  <span>Bludit CMS · phpMyFAQ · YesWiki · 2026</span>
+</footer>
+
+<script>
+function lb(src) {
+  const el = document.getElementById('lb');
+  el.querySelector('img').src = src;
+  el.classList.add('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('lb').classList.remove('open');
+});
+
+// Active nav link on scroll
+const sections = document.querySelectorAll('.cve-section, #overview');
+const links = document.querySelectorAll('.nav-links a');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      links.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(s => io.observe(s));
+</script>
+</body>
+</html>
