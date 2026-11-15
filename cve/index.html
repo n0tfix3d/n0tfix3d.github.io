@@ -376,7 +376,7 @@
         <span class="badge-cwe">CWE-1333</span>
       </div>
       <div class="sw-logo-wrap">
-        <img class="sw-logo" src="../YesWiki/CVE-2026-52778/images/0.png" alt="YesWiki">
+        <img class="sw-logo" src="images/52778/0.png" alt="YesWiki">
       </div>
       <h2 class="cve-title">CVE-2026-52778 — Unsafe eval() in Formula Calculator:<br>Remote Code Execution &amp; Denial of Service</h2>
       <div class="meta-grid">
@@ -486,7 +486,7 @@
         <span class="badge-cwe">CWE-613</span>
       </div>
       <div class="sw-logo-wrap">
-        <img class="sw-logo" src="../BluditCMS/CVE-2026-46656/images/0.png" alt="Bludit CMS">
+        <img class="sw-logo" src="images/46656/0.png" alt="Bludit CMS">
       </div>
       <h2 class="cve-title">CVE-2026-46656 — Improper Authorization leading to Persistent Ghost Sessions</h2>
       <div class="meta-grid">
@@ -518,7 +518,7 @@
       <div class="trow"><span class="tlbl">Location</span><span class="tval"><code>bl-kernel/users.class.php</code> → <code>isLogged()</code></span></div>
       <div class="trow"><span class="tlbl">CVSS Vector</span><span class="tval"><code>AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H</code></span></div>
       <div class="trow"><span class="tlbl">Root Cause</span><span class="tval">The kernel trusts <code>$_SESSION</code> and never re-validates user existence in the database on subsequent requests.</span></div>
-      <div style="margin-top:14px"><img src="../BluditCMS/CVE-2026-46656/images/22.png" alt="Vulnerable code" class="poc-img" onclick="lb(this.src)"></div>
+      <div style="margin-top:14px"><img src="images/46656/22.png" alt="Vulnerable code" class="poc-img" onclick="lb(this.src)"></div>
     </div>
 
     <div class="rpt">
@@ -528,47 +528,47 @@
         <div class="poc-step">
           <div class="poc-sh"><div class="poc-num">1</div><div class="poc-stitle">Administrator creates <code>admin2</code> (Admin) and <code>author</code> (Author).</div></div>
           <div class="poc-body"><div class="poc-imgs">
-            <img src="../BluditCMS/CVE-2026-46656/images/2.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46656/images/3.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46656/images/4.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46656/images/5.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46656/images/6.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/2.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/3.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/4.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/5.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/6.png" alt="" class="poc-img" onclick="lb(this.src)">
           </div></div>
         </div>
         <div class="poc-step">
           <div class="poc-sh"><div class="poc-num">2</div><div class="poc-stitle">Main administrator deletes both accounts using "Delete user and content".</div></div>
           <div class="poc-body"><div class="poc-imgs">
-            <img src="../BluditCMS/CVE-2026-46656/images/12.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46656/images/13.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46656/images/14.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/12.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/13.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/14.png" alt="" class="poc-img" onclick="lb(this.src)">
           </div></div>
         </div>
         <div class="poc-step">
           <div class="poc-sh"><div class="poc-num">3</div><div class="poc-stitle">Database Audit — entries completely removed from the JSON database.</div></div>
           <div class="poc-body"><div class="poc-imgs">
-            <img src="../BluditCMS/CVE-2026-46656/images/15.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46656/images/16.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/15.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/16.png" alt="" class="poc-img" onclick="lb(this.src)">
           </div></div>
         </div>
         <div class="poc-step">
           <div class="poc-sh"><div class="poc-num">4</div><div class="poc-stitle">Persistence Test — deleted <code>admin2</code> still using their Ghost Session successfully publishes a new article.</div></div>
           <div class="poc-body"><div class="poc-imgs">
-            <img src="../BluditCMS/CVE-2026-46656/images/17.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46656/images/18.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/17.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/18.png" alt="" class="poc-img" onclick="lb(this.src)">
           </div></div>
         </div>
         <div class="poc-step">
           <div class="poc-sh"><div class="poc-num">5</div><div class="poc-stitle">Privilege Escalation — deleted <code>admin2</code> accesses the "Add New User" form.</div></div>
           <div class="poc-body"><div class="poc-imgs">
-            <img src="../BluditCMS/CVE-2026-46656/images/19.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/19.png" alt="" class="poc-img" onclick="lb(this.src)">
           </div></div>
         </div>
         <div class="poc-step">
           <div class="poc-sh"><div class="poc-num">6</div><div class="poc-stitle">Full Compromise — creates backdoor admin account <code>created_from_deleted_admin2</code>.</div></div>
           <div class="poc-body"><div class="poc-imgs">
-            <img src="../BluditCMS/CVE-2026-46656/images/20.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46656/images/21.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46656/images/23.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/20.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/21.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46656/23.png" alt="" class="poc-img" onclick="lb(this.src)">
           </div></div>
         </div>
       </div>
@@ -618,7 +618,7 @@
         <span class="badge-cwe">CWE-212</span>
       </div>
       <div class="sw-logo-wrap">
-        <img class="sw-logo" src="../BluditCMS/CVE-2026-46657/images/0.png" alt="Bludit CMS">
+        <img class="sw-logo" src="images/46657/0.png" alt="Bludit CMS">
       </div>
       <h2 class="cve-title">CVE-2026-46657 — Persistent Authentication Tokens Not Revoked upon Account Disablement</h2>
       <div class="meta-grid">
@@ -650,7 +650,7 @@
       <div class="trow"><span class="tlbl">Location</span><span class="tval"><code>bl-kernel/users.class.php</code> → <code>disableUser()</code></span></div>
       <div class="trow"><span class="tlbl">CVSS Vector</span><span class="tval"><code>AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:L/A:N</code></span></div>
       <div class="trow"><span class="tlbl">Root Cause</span><span class="tval"><code>disableUser()</code> correctly prefixes the password with <code>!</code> but leaves <code>tokenAuth</code> and <code>tokenRemember</code> intact in <code>bl-content/databases/users.php</code>. The "Remember Me" subsystem validates tokens directly against the DB without checking the disabled flag.</span></div>
-      <div style="margin-top:14px"><img src="../BluditCMS/CVE-2026-46657/images/1.png" alt="Vulnerable disableUser() code" class="poc-img" onclick="lb(this.src)"></div>
+      <div style="margin-top:14px"><img src="images/46657/1.png" alt="Vulnerable disableUser() code" class="poc-img" onclick="lb(this.src)"></div>
     </div>
 
     <div class="rpt">
@@ -659,30 +659,30 @@
         <div class="poc-step">
           <div class="poc-sh"><div class="poc-num">1</div><div class="poc-stitle">Create <code>admin2</code> and <code>author</code>, both logged in with "Remember Me".</div></div>
           <div class="poc-body"><div class="poc-imgs">
-            <img src="../BluditCMS/CVE-2026-46657/images/2.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46657/images/3.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46657/images/4.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46657/images/5.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46657/images/6.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46657/2.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46657/3.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46657/4.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46657/5.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46657/6.png" alt="" class="poc-img" onclick="lb(this.src)">
           </div></div>
         </div>
         <div class="poc-step">
           <div class="poc-sh"><div class="poc-num">2</div><div class="poc-stitle">Main administrator <strong>disables</strong> both accounts. System confirms disabled.</div></div>
           <div class="poc-body"><div class="poc-imgs">
-            <img src="../BluditCMS/CVE-2026-46657/images/8.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46657/8.png" alt="" class="poc-img" onclick="lb(this.src)">
           </div></div>
         </div>
         <div class="poc-step">
           <div class="poc-sh"><div class="poc-num">3</div><div class="poc-stitle">Database check — password invalidated (<code>!</code>) but tokens <code>tokenAuth</code> + <code>tokenRemember</code> unchanged.</div></div>
           <div class="poc-body"><div class="poc-imgs">
-            <img src="../BluditCMS/CVE-2026-46657/images/9.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46657/9.png" alt="" class="poc-img" onclick="lb(this.src)">
           </div></div>
         </div>
         <div class="poc-step">
           <div class="poc-sh"><div class="poc-num">4</div><div class="poc-stitle">The disabled <code>author</code> successfully publishes a new post via the persistent token.</div></div>
           <div class="poc-body"><div class="poc-imgs">
-            <img src="../BluditCMS/CVE-2026-46657/images/10.png" alt="" class="poc-img" onclick="lb(this.src)">
-            <img src="../BluditCMS/CVE-2026-46657/images/11.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46657/10.png" alt="" class="poc-img" onclick="lb(this.src)">
+            <img src="images/46657/11.png" alt="" class="poc-img" onclick="lb(this.src)">
           </div></div>
         </div>
       </div>
@@ -730,7 +730,7 @@
         <span class="badge-cwe">CWE-328</span>
       </div>
       <div class="sw-logo-wrap">
-        <img class="sw-logo" src="../phpMyFAQ/CVE-2026-48488/images/0.png" alt="phpMyFAQ">
+        <img class="sw-logo" src="images/48488/0.png" alt="phpMyFAQ">
       </div>
       <h2 class="cve-title">CVE-2026-48488 — Weak Cryptography: SHA-1 Used for Attachment Password Hashing</h2>
       <div class="meta-grid">
@@ -760,7 +760,7 @@
       <h3 class="rh2" data-n="03">Technical Analysis</h3>
       <div class="trow"><span class="tlbl">CWE</span><span class="tval">CWE-328 (Use of Weak Hash)</span></div>
       <div class="trow"><span class="tlbl">Location</span><span class="tval"><code>phpmyfaq/src/phpMyFAQ/Attachment/AbstractAttachment.php</code></span></div>
-      <div style="margin-top:14px"><img src="../phpMyFAQ/CVE-2026-48488/images/1.png" alt="SHA-1 code in AbstractAttachment.php" class="poc-img" onclick="lb(this.src)"></div>
+      <div style="margin-top:14px"><img src="images/48488/1.png" alt="SHA-1 code in AbstractAttachment.php" class="poc-img" onclick="lb(this.src)"></div>
     </div>
 
     <div class="rpt">
