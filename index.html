@@ -349,6 +349,8 @@ h1.hero-name em { font-style: normal; color: var(--accent); text-shadow: 0 0 60p
 .hof-org { font-family: var(--mono); font-size: 12px; color: var(--high); text-transform: uppercase; letter-spacing: .12em; margin-bottom: .5rem; min-height: 2.4em }
 .hof-name { font-family: var(--head); font-weight: 600; color: #fff; font-size: 1.1rem; margin-bottom: .3rem }
 .hof-type { font-size: .9rem; color: var(--text2); margin-bottom: 1rem; flex: 1 }
+.hof-card .badge { align-self: flex-start }
+.hof-badges { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center }
 
 /* ══════════════════════════════════════
    CONTACT
@@ -657,21 +659,21 @@ footer .fa { color: var(--accent) }
           <div class="hof-org">🚀 NATIONAL AERONAUTICS AND SPACE ADMINISTRATION (NASA)</div>
           <div class="hof-name">Remote Code Execution</div>
           <div class="hof-type">Bugcrowd — Infrastructure &amp; Web</div>
-          <span class="badge b-crit">CRITICAL</span>&nbsp;<span class="badge b-high">HIGH</span>
+          <div class="hof-badges"><span class="badge b-crit">CRITICAL</span></div>
         </div>
 
         <a href="https://drexel.edu/it/security/services-processes/bug-bounty/" target="_blank" rel="noopener" class="hof-card" style="text-decoration:none;display:block">
           <div class="hof-org" style="color:var(--accent)">🎓 Drexel University VDP</div>
           <div class="hof-name">Remote Code Execution</div>
           <div class="hof-type">Web Infrastructure</div>
-          <span class="badge b-crit">CRITICAL</span>&nbsp;<span class="badge b-cyan">HALL OF FAME →</span>
+          <div class="hof-badges"><span class="badge b-crit">CRITICAL</span><span class="badge b-cyan">HALL OF FAME →</span></div>
         </a>
 
         <a href="https://bugcrowd.com/engagements/cdt-vdp-pro/hall_of_fames" target="_blank" rel="noopener" class="hof-card" style="text-decoration:none;display:block">
           <div class="hof-org" style="color:#60a5fa">🏛️ State of California VDP</div>
           <div class="hof-name">Vulnerability Disclosure</div>
           <div class="hof-type">Bugcrowd — Government Infrastructure</div>
-          <span class="badge b-cyan">HALL OF FAME →</span>
+          <div class="hof-badges"><span class="badge b-cyan">HALL OF FAME →</span></div>
         </a>
 
       </div>
