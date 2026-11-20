@@ -4,33 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#07090f">
+<meta name="description" content="HiddenCry — Security research articles, CVE writeups, and vulnerability disclosure field notes.">
 <title>Articles — HiddenCry</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:      #07090f;
-  --surface: #0c0f1a;
-  --border:  #1a2235;
-  --accent:  #22d3ee;
-  --text:    #dde6f5;
-  --text2:   #8899b4;
-  --text3:   #55667a;
-  --mono:    'IBM Plex Mono', monospace;
-  --head:    'Space Grotesk', system-ui, sans-serif;
+  --bg:          #07090f;
+  --surface:     #0c0f1a;
+  --card:        #0f1320;
+  --border:      #1a2235;
+  --border-b:    #26354f;
+  --accent:      #22d3ee;
+  --accent-dim:  rgba(34,211,238,.1);
+  --accent-glow: rgba(34,211,238,.04);
+  --critical:    #ef4444;
+  --high:        #f97316;
+  --low:         #22c55e;
+  --text:        #dde6f5;
+  --text2:       #8899b4;
+  --text3:       #55667a;
+  --mono:        'IBM Plex Mono', monospace;
+  --head:        'Space Grotesk', system-ui, sans-serif;
+  --body:        'Inter', system-ui, sans-serif;
+  --r:           10px;
+  --rsm:         6px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
-html, body { height: 100% }
+html { scroll-behavior: smooth }
 body {
   background: var(--bg); color: var(--text);
-  font-family: var(--mono); overflow: hidden;
+  font-family: var(--body); font-size: 16px; line-height: 1.75;
+  overflow-x: hidden;
 }
 a { color: inherit; text-decoration: none }
 ::selection { background: var(--accent); color: var(--bg) }
+::-webkit-scrollbar { width: 3px }
+::-webkit-scrollbar-track { background: var(--bg) }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px }
 
-/* grid */
+/* grid bg */
 body::before {
   content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background-image:
@@ -41,7 +56,7 @@ body::before {
 
 /* NAV */
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 10; height: 56px;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 56px;
   background: rgba(7,9,15,.92); backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
@@ -51,156 +66,309 @@ nav {
 .nav-logo span { color: var(--text2) }
 .nav-back {
   font-family: var(--mono); font-size: 12px; color: var(--text2);
-  padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px;
+  padding: 6px 16px; border: 1px solid var(--border); border-radius: var(--rsm);
   transition: all .15s;
 }
 .nav-back:hover { color: var(--accent); border-color: var(--accent) }
 
-/* CENTER STAGE */
-.stage {
-  position: fixed; inset: 0; z-index: 1;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 0; padding: 2rem;
+/* LAYOUT */
+main { position: relative; z-index: 1; padding-top: 56px }
+.wrap { max-width: 860px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem) }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  padding: 5rem 0 3.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.page-tag {
+  font-family: var(--mono); font-size: 11px; color: var(--accent);
+  text-transform: uppercase; letter-spacing: .22em; margin-bottom: 1.6rem; opacity: .8;
+}
+.page-title {
+  font-family: var(--head); font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 700; line-height: 1.05; letter-spacing: -.03em;
+  color: #fff; margin-bottom: 1.4rem;
+}
+.page-title em { font-style: normal; color: var(--accent) }
+.page-desc {
+  font-size: 1rem; color: var(--text2); line-height: 1.8;
+  max-width: 600px; margin-bottom: 2rem;
+}
+.page-meta { display: flex; flex-wrap: wrap; gap: .6rem }
+.pmeta-tag {
+  font-family: var(--mono); font-size: 11px; color: var(--text3);
+  padding: .28rem .9rem; border: 1px solid var(--border); border-radius: 20px;
+}
+.pmeta-tag.hi { color: var(--accent); border-color: rgba(34,211,238,.25) }
+
+/* ── FILTER ROW ── */
+.filter-row {
+  display: flex; flex-wrap: wrap; gap: .5rem;
+  padding: 1.6rem 0; border-bottom: 1px solid var(--border);
+}
+.filter-btn {
+  font-family: var(--mono); font-size: 11px; color: var(--text3);
+  padding: .3rem 1rem; border: 1px solid var(--border); border-radius: 20px;
+  background: none; cursor: pointer; transition: all .15s;
+}
+.filter-btn:hover, .filter-btn.active { color: var(--accent); border-color: rgba(34,211,238,.4); background: var(--accent-dim) }
+
+/* ── SECTION LABEL ── */
+.sec-label {
+  font-family: var(--mono); font-size: 11px; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .2em;
+  padding: 2rem 0 1.2rem;
 }
 
-/* glitch text */
-.cs-label {
-  font-size: 11px; color: var(--accent); letter-spacing: .22em;
-  text-transform: uppercase; margin-bottom: 1.4rem; opacity: .8;
-}
+/* ── ARTICLE CARD (editorial row) ── */
+.article-list { display: flex; flex-direction: column }
 
-.cs-title {
-  font-family: var(--head); font-size: clamp(3.5rem, 10vw, 7rem);
-  font-weight: 700; line-height: 1; letter-spacing: -.04em; color: #fff;
-  position: relative; margin-bottom: 2rem;
+.article-row {
+  display: grid;
+  grid-template-rows: auto;
+  padding: 2.4rem 0;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  transition: background .18s;
+  border-radius: var(--rsm);
 }
-.cs-title .cy { color: var(--accent); text-shadow: 0 0 60px rgba(34,211,238,.35) }
-
-/* blinking cursor line */
-.cs-line {
-  font-size: clamp(.9rem, 2vw, 1.1rem); color: var(--text2);
-  display: flex; align-items: center; gap: .5rem; margin-bottom: 3rem;
+.article-row::before {
+  content: ''; position: absolute; left: -1.5rem; top: 50%; transform: translateY(-50%);
+  width: 2px; height: 0; background: var(--accent); border-radius: 2px;
+  transition: height .22s;
 }
-.cs-line .ps1 { color: var(--accent) }
-.cur { display: inline-block; width: 9px; height: 1.1em; background: var(--accent); vertical-align: middle; animation: blink 1s step-end infinite }
-@keyframes blink { 50% { opacity: 0 } }
+.article-row:hover { background: var(--accent-glow) }
+.article-row:hover::before { height: 55% }
 
-/* progress bar */
-.prog-wrap { width: clamp(260px, 50vw, 480px); margin-bottom: 1rem }
-.prog-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); margin-bottom: .5rem }
-.prog-track { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden }
-.prog-fill {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg, var(--accent), rgba(34,211,238,.4));
-  box-shadow: 0 0 10px var(--accent);
-  animation: fill 3.5s cubic-bezier(.4,0,.2,1) forwards 0.6s;
-}
-@keyframes fill { to { width: 72% } }
-
-.cs-sub { font-size: 11px; color: var(--text3); letter-spacing: .08em }
-.cs-sub span { color: var(--text2) }
-
-/* glow orb behind */
-.orb {
-  position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
-  background: radial-gradient(circle, rgba(34,211,238,.07) 0%, transparent 70%);
-}
-.orb1 { width: 700px; height: 700px; top: -200px; left: -200px }
-.orb2 { width: 500px; height: 500px; bottom: -150px; right: -100px; background: radial-gradient(circle, rgba(239,68,68,.04) 0%, transparent 70%) }
-
-/* articles teaser */
-.topics {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem;
-  margin-top: 2.4rem; max-width: 580px;
-}
-.topic {
-  font-size: 11px; color: var(--text3); font-family: var(--mono);
-  padding: .3rem .9rem; border: 1px solid var(--border); border-radius: 20px;
-  transition: all .2s;
-}
-.topic:hover { color: var(--accent); border-color: rgba(34,211,238,.35) }
-
-/* footer */
-footer {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
-  padding: 1rem clamp(1.5rem, 4vw, 5rem);
+/* kicker line */
+.art-kicker {
   display: flex; align-items: center; justify-content: space-between;
-  font-size: .72rem; color: var(--text3); border-top: 1px solid var(--border);
-  background: rgba(7,9,15,.85); backdrop-filter: blur(8px);
+  flex-wrap: wrap; gap: .6rem; margin-bottom: 1rem;
+}
+.art-kicker-left {
+  font-family: var(--mono); font-size: 10.5px; color: var(--text3);
+  letter-spacing: .08em;
+}
+.art-kicker-left .sep { color: var(--accent); margin: 0 .3rem }
+.art-kicker-left .look { color: var(--text3); font-style: italic }
+.art-kicker-right { display: flex; align-items: center; gap: .6rem }
+
+/* category + date */
+.art-cat {
+  font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: .14em; padding: .22rem .8rem; border-radius: 20px; border: 1px solid var(--border);
+  color: var(--text3);
+}
+.art-cat.cve { color: var(--critical); border-color: rgba(239,68,68,.25) }
+.art-cat.bounty { color: var(--high); border-color: rgba(249,115,22,.25) }
+.art-cat.research { color: var(--accent); border-color: rgba(34,211,238,.25) }
+.art-date { font-family: var(--mono); font-size: 10.5px; color: var(--text3) }
+
+/* title */
+.art-title {
+  font-family: var(--head); font-size: clamp(1.2rem, 3vw, 1.65rem);
+  font-weight: 700; color: #fff; line-height: 1.25; margin-bottom: .75rem;
+}
+.art-title a { transition: color .15s }
+.article-row:hover .art-title a { color: var(--accent) }
+
+/* description */
+.art-desc { font-size: .95rem; color: var(--text2); line-height: 1.75; margin-bottom: 1.2rem; max-width: 680px }
+
+/* footer row */
+.art-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .8rem }
+.art-status {
+  font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .12em;
+  padding: .22rem .9rem; border-radius: 20px;
+}
+.art-status.soon { background: rgba(249,115,22,.08); color: var(--high); border: 1px solid rgba(249,115,22,.2) }
+.art-status.published { background: rgba(34,197,94,.08); color: var(--low); border: 1px solid rgba(34,197,94,.2) }
+.art-cta {
+  font-family: var(--mono); font-size: 12px; color: var(--accent);
+  display: flex; align-items: center; gap: .4rem; transition: gap .15s;
+}
+.article-row:hover .art-cta { gap: .7rem }
+.art-cta.disabled { color: var(--text3); pointer-events: none }
+
+/* tags */
+.art-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .9rem }
+.art-tag {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  padding: .18rem .7rem; border-radius: 20px; border: 1px solid var(--border);
+  transition: all .15s;
+}
+.art-tag:hover { color: var(--accent); border-color: rgba(34,211,238,.35) }
+
+/* ── TOPICS FOOTER ── */
+.topics-sec {
+  padding: 3rem 0 5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+}
+.topics-title { font-family: var(--mono); font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .2em; margin-bottom: 1.2rem }
+.topics-row { display: flex; flex-wrap: wrap; gap: .5rem }
+.topic-pill {
+  font-family: var(--mono); font-size: 11px; color: var(--text3);
+  padding: .3rem 1rem; border: 1px solid var(--border); border-radius: 20px;
+  transition: all .2s; cursor: default;
+}
+.topic-pill:hover { color: var(--accent); border-color: rgba(34,211,238,.35) }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1.4rem clamp(1.5rem, 4vw, 5rem);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .6rem;
+  font-family: var(--mono); font-size: .78rem; color: var(--text3);
+  position: relative; z-index: 1;
 }
 footer .fa { color: var(--accent) }
+
+@media (max-width: 600px) {
+  .page-title { font-size: clamp(2rem, 10vw, 2.4rem) }
+  .art-kicker { flex-direction: column; align-items: flex-start }
+  .article-row::before { display: none }
+}
 </style>
 </head>
 <body>
 
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
-
 <nav>
-  <span class="nav-logo">hidden<span>@</span>cry<span>:~$</span></span>
+  <a href="../index.html" class="nav-logo">hidden<span>@</span>cry<span>:~$</span></a>
   <a href="../index.html" class="nav-back">← Portfolio</a>
 </nav>
 
-<div class="stage">
-  <div class="cs-label">articles · hiddencry.io</div>
+<main>
+  <div class="wrap">
 
-  <h1 class="cs-title">Coming<br><span class="cy">Soon</span></h1>
+    <!-- PAGE HEADER -->
+    <header class="page-header">
+      <div class="page-tag">articles · hiddencry.io</div>
+      <h1 class="page-title">Security Research &<br><em>Field Notes</em></h1>
+      <p class="page-desc">
+        Findings, evidence, and lessons learned from CVE research,
+        authorized penetration tests, and vulnerability disclosure programs.
+        Each article documents the full chain — discovery, exploitation, remediation.
+      </p>
+      <div class="page-meta">
+        <span class="pmeta-tag hi">2 articles in draft</span>
+        <span class="pmeta-tag">4 CVEs published</span>
+        <span class="pmeta-tag">3 Hall of Fame</span>
+      </div>
+    </header>
 
-  <div class="cs-line">
-    <span class="ps1">root@kali</span>:~$&nbsp;
-    <span id="cmd"></span><span class="cur"></span>
-  </div>
-
-  <div class="prog-wrap">
-    <div class="prog-label">
-      <span>Writing articles...</span>
-      <span id="pct">0%</span>
+    <!-- FILTER -->
+    <div class="filter-row">
+      <button class="filter-btn active"># all</button>
+      <button class="filter-btn"># cve-research</button>
+      <button class="filter-btn"># web-exploitation</button>
+      <button class="filter-btn"># bug-bounty</button>
+      <button class="filter-btn"># mobile-pentesting</button>
+      <button class="filter-btn"># active-directory</button>
     </div>
-    <div class="prog-track">
-      <div class="prog-fill" id="pfill"></div>
+
+    <!-- ARTICLE LIST -->
+    <div class="sec-label">— Disclosure archive</div>
+
+    <div class="article-list">
+
+      <!-- ARTICLE 1 -->
+      <article class="article-row">
+        <div class="art-kicker">
+          <span class="art-kicker-left">
+            HiddenCry / Web App<span class="sep">→</span>RCE
+            &nbsp;·&nbsp; <span class="look">Look closer.</span>
+          </span>
+          <div class="art-kicker-right">
+            <span class="art-cat cve">CVE Writeup</span>
+            <span class="art-date">2026</span>
+          </div>
+        </div>
+        <h2 class="art-title"><a href="#">From eval() to Shell — Breaking YesWiki's Formula Calculator (CVE-2026-52778)</a></h2>
+        <p class="art-desc">
+          A deep-dive into discovering and exploiting an unauthenticated Remote Code Execution
+          vulnerability in YesWiki ≤ 4.6.5. The formula calculator exposes a raw eval() call
+          with no sandboxing — reachable without authentication, exploitable to full shell access.
+          CVSS 9.8 / CRITICAL. Coordinated disclosure and patch timeline included.
+        </p>
+        <div class="art-tags">
+          <span class="art-tag"># SSTI</span>
+          <span class="art-tag"># RCE</span>
+          <span class="art-tag"># eval-injection</span>
+          <span class="art-tag"># unauthenticated</span>
+          <span class="art-tag"># PHP</span>
+        </div>
+        <div class="art-foot" style="margin-top:1.2rem">
+          <span class="art-status soon">Dropping soon</span>
+          <span class="art-cta disabled">Read the case file →</span>
+        </div>
+      </article>
+
+      <!-- ARTICLE 2 -->
+      <article class="article-row">
+        <div class="art-kicker">
+          <span class="art-kicker-left">
+            HiddenCry / Web App<span class="sep">→</span>Broken Access Control
+            &nbsp;·&nbsp; <span class="look">Look closer.</span>
+          </span>
+          <div class="art-kicker-right">
+            <span class="art-cat cve">CVE Writeup</span>
+            <span class="art-date">2026</span>
+          </div>
+        </div>
+        <h2 class="art-title"><a href="#">Ghost Sessions — When Deleting a User Isn't Enough (CVE-2026-46656 &amp; CVE-2026-46657)</a></h2>
+        <p class="art-desc">
+          Two back-to-back broken access control vulnerabilities in Bludit CMS &lt; 3.22.0.
+          Deleted users retain valid session tokens. Disabled accounts keep API access.
+          An in-depth walkthrough of the token lifecycle flaw, proof-of-concept, impact analysis,
+          and the patch that finally closed both gaps.
+        </p>
+        <div class="art-tags">
+          <span class="art-tag"># broken-access-control</span>
+          <span class="art-tag"># session-management</span>
+          <span class="art-tag"># token-revocation</span>
+          <span class="art-tag"># CMS</span>
+        </div>
+        <div class="art-foot" style="margin-top:1.2rem">
+          <span class="art-status soon">Dropping soon</span>
+          <span class="art-cta disabled">Read the case file →</span>
+        </div>
+      </article>
+
+    </div><!-- /article-list -->
+
+    <!-- TOPICS -->
+    <div class="topics-sec">
+      <div class="topics-title">Topics covered</div>
+      <div class="topics-row">
+        <span class="topic-pill"># web exploitation</span>
+        <span class="topic-pill"># CVE writeups</span>
+        <span class="topic-pill"># privilege escalation</span>
+        <span class="topic-pill"># active directory</span>
+        <span class="topic-pill"># bug bounty</span>
+        <span class="topic-pill"># mobile pentesting</span>
+        <span class="topic-pill"># malware analysis</span>
+        <span class="topic-pill"># network pentesting</span>
+        <span class="topic-pill"># red team</span>
+      </div>
     </div>
-  </div>
 
-  <p class="cs-sub">First articles dropping soon — <span>offensive security · CVE research · writeups</span></p>
-
-  <div class="topics">
-    <span class="topic"># web exploitation</span>
-    <span class="topic"># CVE writeups</span>
-    <span class="topic"># privilege escalation</span>
-    <span class="topic"># active directory</span>
-    <span class="topic"># bug bounty tips</span>
-    <span class="topic"># mobile pentesting</span>
-    <span class="topic"># malware analysis</span>
-  </div>
-</div>
+  </div><!-- /wrap -->
+</main>
 
 <footer>
-  <span>© 2026 <span class="fa">HiddenCry</span></span>
-  <span>Blog — Coming Soon</span>
+  <span>© 2026 <span class="fa">HiddenCry</span> — Security Researcher &amp; CVE Author</span>
+  <span>Articles</span>
 </footer>
 
 <script>
-const CMD = 'git commit -m "first article — dropping soon"';
-const el = document.getElementById('cmd');
-let i = 0;
-setTimeout(() => {
-  const iv = setInterval(() => {
-    el.textContent += CMD[i++];
-    if (i >= CMD.length) clearInterval(iv);
-  }, 42);
-}, 600);
-
-/* progress pct counter */
-const pct = document.getElementById('pct');
-const start = performance.now();
-const DURATION = 4100, TARGET = 72;
-function tick(now) {
-  const t = Math.min((now - start) / DURATION, 1);
-  const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
-  pct.textContent = Math.round(ease * TARGET) + '%';
-  if (t < 1) requestAnimationFrame(tick);
-}
-setTimeout(() => requestAnimationFrame(tick), 600);
+/* filter buttons — UI only for now */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
 </script>
 </body>
 </html>
