@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#07090f">
-<meta name="description" content="HiddenCry — Security research articles, CVE writeups, and vulnerability disclosure field notes.">
+<meta name="description" content="HiddenCry — Security research, CVE writeups, and responsible disclosure field notes.">
 <title>Articles — HiddenCry</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:          #07090f;
@@ -28,7 +28,7 @@
   --mono:        'IBM Plex Mono', monospace;
   --head:        'Space Grotesk', system-ui, sans-serif;
   --body:        'Inter', system-ui, sans-serif;
-  --r:           10px;
+  --r:           8px;
   --rsm:         6px;
 }
 
@@ -45,7 +45,6 @@ a { color: inherit; text-decoration: none }
 ::-webkit-scrollbar-track { background: var(--bg) }
 ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px }
 
-/* grid bg */
 body::before {
   content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background-image:
@@ -54,7 +53,7 @@ body::before {
   background-size: 44px 44px;
 }
 
-/* NAV */
+/* ── NAV ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 56px;
   background: rgba(7,9,15,.92); backdrop-filter: blur(16px);
@@ -71,304 +70,444 @@ nav {
   padding: 7px 14px; border-radius: var(--rsm);
   transition: color .15s, background .15s;
 }
-.nav-links a:hover { color: var(--accent); background: rgba(34,211,238,.1) }
+.nav-links a:hover { color: var(--accent); background: var(--accent-dim) }
+.nav-links .active { color: var(--accent) }
 .nav-cve {
   font-family: var(--mono); font-size: 12px; font-weight: 700;
   color: var(--bg) !important; background: var(--accent) !important;
   padding: 6px 16px; border-radius: var(--rsm); letter-spacing: .07em;
-  text-transform: none; transition: opacity .15s !important;
+  text-transform: none !important; transition: opacity .15s !important;
 }
 .nav-cve:hover { opacity: .85 !important }
+.hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px }
+.hamburger span { display: block; width: 22px; height: 2px; background: var(--text2); border-radius: 2px }
 
-/* LAYOUT */
+/* ── LAYOUT ── */
 main { position: relative; z-index: 1; padding-top: 56px }
 .wrap { max-width: 860px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem) }
+hr.rule { border: none; border-top: 1px solid var(--border); margin: 0 }
 
-/* ── PAGE HEADER ── */
-.page-header {
-  padding: 5rem 0 3.5rem;
-  border-bottom: 1px solid var(--border);
-}
-.page-tag {
-  font-family: var(--mono); font-size: 11px; color: var(--accent);
-  text-transform: uppercase; letter-spacing: .22em; margin-bottom: 1.6rem; opacity: .8;
-}
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1. PAGE HEADER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.page-header { padding: 5rem 0 3.5rem }
+
 .page-title {
-  font-family: var(--head); font-size: clamp(2.4rem, 6vw, 4rem);
-  font-weight: 700; line-height: 1.05; letter-spacing: -.03em;
-  color: #fff; margin-bottom: 1.4rem;
+  font-family: var(--head);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700; color: #fff;
+  line-height: 1.1; letter-spacing: -.02em;
+  margin-bottom: .55rem;
 }
-.page-title em { font-style: normal; color: var(--accent) }
-.page-desc {
-  font-size: 1rem; color: var(--text2); line-height: 1.8;
-  max-width: 600px; margin-bottom: 2rem;
+.page-tagline {
+  font-family: var(--head);
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  font-weight: 400; color: var(--text2);
+  margin-bottom: 1.5rem;
 }
-.page-meta { display: flex; flex-wrap: wrap; gap: .6rem }
-.pmeta-tag {
+.page-intro {
+  font-size: .95rem; color: var(--text2);
+  line-height: 1.8; max-width: 580px;
+  margin-bottom: 1.4rem;
+}
+.page-cta-link {
+  font-family: var(--mono); font-size: 13px; color: var(--accent);
+  display: inline-flex; align-items: center; gap: .4rem;
+  transition: gap .15s;
+}
+.page-cta-link:hover { gap: .7rem }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   2. CASE PATH DIAGRAM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.case-path-wrap {
+  margin: 2.5rem 0;
+  border: 1px solid var(--border); border-radius: var(--r);
+  background: var(--surface); padding: 1.5rem 1.8rem;
+}
+.cp-header {
+  display: flex; align-items: center; gap: .8rem; margin-bottom: 1.3rem;
   font-family: var(--mono); font-size: 11px; color: var(--text3);
-  padding: .28rem .9rem; border: 1px solid var(--border); border-radius: 20px;
+  text-transform: uppercase; letter-spacing: .18em;
 }
-.pmeta-tag.hi { color: var(--accent); border-color: rgba(34,211,238,.25) }
+.cp-badge {
+  padding: .15rem .65rem; border-radius: 20px; font-size: 10px;
+  background: rgba(34,197,94,.08); color: var(--low);
+  border: 1px solid rgba(34,197,94,.2);
+}
+.cp-flow {
+  display: flex; align-items: stretch; flex-wrap: wrap; gap: 0;
+  font-family: var(--mono); font-size: 12px;
+}
+.cp-node {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--rsm); padding: .4rem 1rem;
+  color: var(--text); display: flex; flex-direction: column;
+  align-items: center; gap: .18rem; white-space: nowrap;
+}
+.cp-node .sub { font-size: 10px; color: var(--text3); font-style: italic }
+.cp-node.hl  { border-color: rgba(34,211,238,.4); color: var(--accent) }
+.cp-node.vul { border-color: rgba(239,68,68,.4);  color: var(--critical) }
+.cp-arrow {
+  display: flex; align-items: center; padding: 0 .45rem;
+  color: var(--text3); font-size: 16px; align-self: center;
+}
+.cp-boundary {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 0 .6rem;
+  border-left: 1px dashed var(--border); border-right: 1px dashed var(--border);
+  margin: 0 .2rem;
+}
+.cp-boundary .b-label { font-size: 10px; color: var(--text3); white-space: nowrap }
+.cp-boundary .b-sub   { font-size: 9px;  color: var(--text3); opacity: .6; white-space: nowrap }
 
-/* ── FILTER ROW ── */
-.filter-row {
-  display: flex; flex-wrap: wrap; gap: .5rem;
-  padding: 1.6rem 0; border-bottom: 1px solid var(--border);
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   3. PUBLISHED CASE FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.section-head {
+  padding: 2.4rem 0 1.5rem;
+  display: flex; align-items: baseline;
+  justify-content: space-between; gap: 1rem; flex-wrap: wrap;
 }
-.filter-btn {
+.section-head h2 {
+  font-family: var(--head); font-size: 1.25rem; font-weight: 600; color: #fff;
+}
+.section-head .sh-sub {
   font-family: var(--mono); font-size: 11px; color: var(--text3);
-  padding: .3rem 1rem; border: 1px solid var(--border); border-radius: 20px;
-  background: none; cursor: pointer; transition: all .15s;
-}
-.filter-btn:hover, .filter-btn.active { color: var(--accent); border-color: rgba(34,211,238,.4); background: var(--accent-dim) }
-
-/* ── SECTION LABEL ── */
-.sec-label {
-  font-family: var(--mono); font-size: 11px; color: var(--text3);
-  text-transform: uppercase; letter-spacing: .2em;
-  padding: 2rem 0 1.2rem;
+  text-transform: uppercase; letter-spacing: .12em;
 }
 
-/* ── ARTICLE CARD (editorial row) ── */
-.article-list { display: flex; flex-direction: column }
+.case-list { display: flex; flex-direction: column }
 
-.article-row {
-  display: grid;
-  grid-template-rows: auto;
-  padding: 2.4rem 0;
+.case-card {
+  display: block; padding: 2rem 0;
   border-bottom: 1px solid var(--border);
-  position: relative;
-  transition: background .18s;
-  border-radius: var(--rsm);
+  position: relative; cursor: default;
+  transition: background .15s; border-radius: 4px;
 }
-.article-row::before {
-  content: ''; position: absolute; left: -1.5rem; top: 50%; transform: translateY(-50%);
-  width: 2px; height: 0; background: var(--accent); border-radius: 2px;
-  transition: height .22s;
+.case-card.linked { cursor: pointer }
+.case-card.linked:hover { background: var(--accent-glow) }
+.case-card::before {
+  content: ''; position: absolute; left: -1.4rem; top: 50%;
+  transform: translateY(-50%);
+  width: 2px; height: 0; background: var(--accent);
+  border-radius: 2px; transition: height .22s;
 }
-.article-row:hover { background: var(--accent-glow) }
-.article-row:hover::before { height: 55% }
+.case-card.linked:hover::before { height: 48% }
 
-/* kicker line */
-.art-kicker {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: .6rem; margin-bottom: 1rem;
+/* kicker — single line: "HiddenCry / Web App → RCE · Look closer." */
+.cc-kicker {
+  font-family: var(--mono); font-size: 11.5px; color: var(--text3);
+  margin-bottom: .9rem; display: flex; align-items: center; flex-wrap: wrap; gap: .3rem;
 }
-.art-kicker-left {
-  font-family: var(--mono); font-size: 10.5px; color: var(--text3);
-  letter-spacing: .08em;
-}
-.art-kicker-left .sep { color: var(--accent); margin: 0 .3rem }
-.art-kicker-left .look { color: var(--text3); font-style: italic }
-.art-kicker-right { display: flex; align-items: center; gap: .6rem }
+.cc-kicker .ck-path { color: var(--text2) }
+.cc-kicker .ck-arr  { color: var(--accent) }
+.cc-kicker .ck-sep  { color: var(--text3) }
+.cc-kicker .ck-look { font-style: italic; color: var(--text3) }
 
-/* category + date */
-.art-cat {
+/* category + date — same line */
+.cc-meta {
+  display: flex; align-items: center; gap: .7rem;
+  flex-wrap: wrap; margin-bottom: .9rem;
+}
+.cc-cat {
   font-family: var(--mono); font-size: 10px; text-transform: uppercase;
-  letter-spacing: .14em; padding: .22rem .8rem; border-radius: 20px; border: 1px solid var(--border);
-  color: var(--text3);
+  letter-spacing: .12em; padding: .18rem .75rem; border-radius: 20px;
+  border: 1px solid var(--border); color: var(--text3);
 }
-.art-cat.cve { color: var(--critical); border-color: rgba(239,68,68,.25) }
-.art-cat.bounty { color: var(--high); border-color: rgba(249,115,22,.25) }
-.art-cat.research { color: var(--accent); border-color: rgba(34,211,238,.25) }
-.art-date { font-family: var(--mono); font-size: 10.5px; color: var(--text3) }
+.cc-cat.cve    { color: var(--critical); border-color: rgba(239,68,68,.25) }
+.cc-cat.bounty { color: var(--high);     border-color: rgba(249,115,22,.25) }
+.cc-cat.notes  { color: var(--accent);   border-color: rgba(34,211,238,.25) }
+.cc-date { font-family: var(--mono); font-size: 11px; color: var(--text3) }
 
-/* title */
-.art-title {
-  font-family: var(--head); font-size: clamp(1.2rem, 3vw, 1.65rem);
-  font-weight: 700; color: #fff; line-height: 1.25; margin-bottom: .75rem;
+/* H3 title */
+.cc-title {
+  font-family: var(--head); font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  font-weight: 600; color: #fff; line-height: 1.25;
+  margin-bottom: .6rem; transition: color .15s;
 }
-.art-title a { transition: color .15s }
-.article-row:hover .art-title a { color: var(--accent) }
+.case-card.linked:hover .cc-title { color: var(--accent) }
 
-/* description */
-.art-desc { font-size: .95rem; color: var(--text2); line-height: 1.75; margin-bottom: 1.2rem; max-width: 680px }
-
-/* footer row */
-.art-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .8rem }
-.art-status {
-  font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .12em;
-  padding: .22rem .9rem; border-radius: 20px;
+/* description paragraph */
+.cc-desc {
+  font-size: .93rem; color: var(--text2); line-height: 1.78;
+  max-width: 660px; margin-bottom: 1.1rem;
 }
-.art-status.soon { background: rgba(249,115,22,.08); color: var(--high); border: 1px solid rgba(249,115,22,.2) }
-.art-status.published { background: rgba(34,197,94,.08); color: var(--low); border: 1px solid rgba(34,197,94,.2) }
-.art-cta {
-  font-family: var(--mono); font-size: 12px; color: var(--accent);
-  display: flex; align-items: center; gap: .4rem; transition: gap .15s;
-}
-.article-row:hover .art-cta { gap: .7rem }
-.art-cta.disabled { color: var(--text3); pointer-events: none }
 
-/* tags */
-.art-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .9rem }
-.art-tag {
-  font-family: var(--mono); font-size: 10px; color: var(--text3);
-  padding: .18rem .7rem; border-radius: 20px; border: 1px solid var(--border);
-  transition: all .15s;
+/* status badge */
+.cc-status {
+  display: inline-block; margin-bottom: .9rem;
+  font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: .1em; padding: .22rem .85rem; border-radius: 20px;
 }
-.art-tag:hover { color: var(--accent); border-color: rgba(34,211,238,.35) }
+.cc-status.resolved { background: rgba(34,197,94,.08);  color: var(--low);    border: 1px solid rgba(34,197,94,.2) }
+.cc-status.public   { background: var(--accent-dim);    color: var(--accent); border: 1px solid rgba(34,211,238,.25) }
+.cc-status.soon     { background: rgba(249,115,22,.08); color: var(--high);   border: 1px solid rgba(249,115,22,.2) }
 
-/* ── TOPICS FOOTER ── */
-.topics-sec {
-  padding: 3rem 0 5rem;
+/* read link */
+.cc-read {
+  display: block; margin-top: .2rem;
+  font-family: var(--mono); font-size: 12.5px; color: var(--accent);
+  display: inline-flex; align-items: center; gap: .4rem;
+  transition: gap .15s;
+}
+.cc-read.off { color: var(--text3); pointer-events: none }
+.case-card.linked:hover .cc-read { gap: .7rem }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   4. HOW EVIDENCE IS HANDLED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.evidence-section { padding: 3rem 0 2rem }
+.evidence-section h2 {
+  font-family: var(--head); font-size: 1.25rem; font-weight: 600;
+  color: #fff; margin-bottom: .3rem;
+}
+.ev-sub { font-size: .9rem; color: var(--text3); margin-bottom: 2rem }
+.ev-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2.2rem }
+.ev-col { border-left: 2px solid; padding-left: 1.4rem }
+.ev-col.pub  { border-color: var(--accent) }
+.ev-col.priv { border-color: var(--border-b) }
+.ev-col-tag {
+  font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: .18em; color: var(--text3); margin-bottom: .5rem;
+}
+.ev-col.pub .ev-col-tag { color: var(--accent) }
+.ev-col-title { font-weight: 600; color: #fff; font-size: .95rem; margin-bottom: .4rem }
+.ev-col-body  { font-size: .88rem; color: var(--text2); line-height: 1.72 }
+@media (max-width: 580px) { .ev-cols { grid-template-columns: 1fr } }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   5. FOUR ACTION LINKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.action-row {
+  display: flex; flex-wrap: wrap; gap: 1rem 2.5rem;
+  padding: 2rem 0 5rem;
   border-top: 1px solid var(--border);
-  margin-top: 1rem;
 }
-.topics-title { font-family: var(--mono); font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .2em; margin-bottom: 1.2rem }
-.topics-row { display: flex; flex-wrap: wrap; gap: .5rem }
-.topic-pill {
-  font-family: var(--mono); font-size: 11px; color: var(--text3);
-  padding: .3rem 1rem; border: 1px solid var(--border); border-radius: 20px;
-  transition: all .2s; cursor: default;
+.action-link {
+  font-family: var(--mono); font-size: 12.5px; color: var(--text2);
+  display: inline-flex; align-items: center; gap: .4rem;
+  transition: color .15s, gap .15s;
 }
-.topic-pill:hover { color: var(--accent); border-color: rgba(34,211,238,.35) }
+.action-link:hover { color: var(--accent); gap: .7rem }
 
-/* FOOTER */
+/* ── FOOTER ── */
 footer {
   border-top: 1px solid var(--border);
   padding: 1.4rem clamp(1.5rem, 4vw, 5rem);
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .6rem;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: .6rem;
   font-family: var(--mono); font-size: .78rem; color: var(--text3);
   position: relative; z-index: 1;
 }
 footer .fa { color: var(--accent) }
 
-@media (max-width: 600px) {
-  .page-title { font-size: clamp(2rem, 10vw, 2.4rem) }
-  .art-kicker { flex-direction: column; align-items: flex-start }
-  .article-row::before { display: none }
+/* MOBILE */
+@media (max-width: 640px) {
+  .nav-links {
+    display: none; flex-direction: column; position: fixed;
+    top: 56px; left: 0; right: 0;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 1.5rem; gap: 1rem;
+  }
+  .nav-links.open { display: flex }
+  .hamburger { display: flex }
+  .cp-flow { gap: .3rem }
 }
 </style>
 </head>
 <body>
 
+<!-- ── NAV ── -->
 <nav>
   <a href="../index.html" class="nav-logo">hidden<span>@</span>cry<span>:~$</span></a>
-  <div class="nav-links">
+  <div class="nav-links" id="nav-links">
     <a href="../index.html#about">About Me</a>
     <a href="../cve/index.html" class="nav-cve">CVE →</a>
     <a href="../index.html#bounty">Hall of Fame</a>
     <a href="../index.html#contact">Contact</a>
-    <a href="index.html" style="color:var(--accent)">Articles</a>
+    <a href="index.html" class="active">Articles</a>
   </div>
+  <button class="hamburger" id="hbg" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <main>
-  <div class="wrap">
+<div class="wrap">
 
-    <!-- PAGE HEADER -->
-    <header class="page-header">
-      <div class="page-tag">articles · hiddencry.io</div>
-      <h1 class="page-title">Security Research &<br><em>Field Notes</em></h1>
-      <p class="page-desc">
-        Findings, evidence, and lessons learned from CVE research,
-        authorized penetration tests, and vulnerability disclosure programs.
-        Each article documents the full chain — discovery, exploitation, remediation.
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       1. PAGE HEADER
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <header class="page-header">
+    <h1 class="page-title">Research &amp; responsible disclosure</h1>
+    <p class="page-tagline">Findings, evidence, and lessons learned.</p>
+    <p class="page-intro">
+      Published case studies from authorized security research and vulnerability disclosure programs.
+      Each case documents the full chain — discovery to remediation — and states its disclosure
+      context. No speculation, only confirmed findings with evidence.
+    </p>
+    <a href="../index.html#about" class="page-cta-link">How I approach a review →</a>
+  </header>
+
+  <hr class="rule">
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       2. CASE PATH DIAGRAM
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div class="case-path-wrap">
+    <div class="cp-header">
+      Case path · YesWiki Formula Calculator
+      <span class="cp-badge">public</span>
+    </div>
+    <div class="cp-flow">
+      <div class="cp-node">
+        Browser
+        <span class="sub">attacker</span>
+      </div>
+      <div class="cp-arrow">→</div>
+      <div class="cp-boundary">
+        <span class="b-label">Boundary 1</span>
+        <span class="b-sub">no auth</span>
+      </div>
+      <div class="cp-arrow">→</div>
+      <div class="cp-node hl">
+        Formula API
+        <span class="sub">/api/formula</span>
+      </div>
+      <div class="cp-arrow">→</div>
+      <div class="cp-boundary">
+        <span class="b-label">Boundary 2</span>
+        <span class="b-sub">no sandbox</span>
+      </div>
+      <div class="cp-arrow">→</div>
+      <div class="cp-node vul">
+        PHP eval()
+        <span class="sub">code runs on server</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       3. PUBLISHED CASE FILES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div class="section-head">
+    <h2>Published case files</h2>
+    <span class="sh-sub">Responsible disclosure archive</span>
+  </div>
+
+  <div class="case-list">
+
+    <!-- CARD 1 -->
+    <article class="case-card">
+      <div class="cc-kicker">
+        <span class="ck-path">HiddenCry / Web App <span class="ck-arr">→</span> RCE</span>
+        <span class="ck-sep">·</span>
+        <span class="ck-look">Look closer.</span>
+      </div>
+      <div class="cc-meta">
+        <span class="cc-cat cve">CVE Writeup</span>
+        <span class="cc-date">May 23, 2026</span>
+      </div>
+      <h3 class="cc-title">Article title placeholder — CVE-XXXX-XXXXX</h3>
+      <p class="cc-desc">
+        Short description of the finding. What was the vulnerable component,
+        what boundary was crossed, what was the confirmed impact.
+        One or two sentences max.
       </p>
-      <div class="page-meta">
-        <span class="pmeta-tag hi">2 articles in draft</span>
-        <span class="pmeta-tag">4 CVEs published</span>
-        <span class="pmeta-tag">3 Hall of Fame</span>
+      <span class="cc-status soon">Dropping soon</span>
+      <span class="cc-read off">Read the case file →</span>
+    </article>
+
+    <!-- CARD 2 -->
+    <article class="case-card">
+      <div class="cc-kicker">
+        <span class="ck-path">HiddenCry / Web App <span class="ck-arr">→</span> Broken Access Control</span>
+        <span class="ck-sep">·</span>
+        <span class="ck-look">Look closer.</span>
       </div>
-    </header>
+      <div class="cc-meta">
+        <span class="cc-cat cve">CVE Writeup</span>
+        <span class="cc-date">Apr 25, 2026</span>
+      </div>
+      <h3 class="cc-title">Article title placeholder — CVE-XXXX-XXXXX</h3>
+      <p class="cc-desc">
+        Short description of the finding. What was the vulnerable component,
+        what boundary was crossed, what was the confirmed impact.
+        One or two sentences max.
+      </p>
+      <span class="cc-status soon">Dropping soon</span>
+      <span class="cc-read off">Read the case file →</span>
+    </article>
 
-    <!-- FILTER -->
-    <div class="filter-row">
-      <button class="filter-btn active"># all</button>
-      <button class="filter-btn"># cve-research</button>
-      <button class="filter-btn"># web-exploitation</button>
-      <button class="filter-btn"># bug-bounty</button>
-      <button class="filter-btn"># mobile-pentesting</button>
-      <button class="filter-btn"># active-directory</button>
-    </div>
+    <!-- CARD 3 -->
+    <article class="case-card">
+      <div class="cc-kicker">
+        <span class="ck-path">HiddenCry / Bug Bounty <span class="ck-arr">→</span> RCE</span>
+        <span class="ck-sep">·</span>
+        <span class="ck-look">Look closer.</span>
+      </div>
+      <div class="cc-meta">
+        <span class="cc-cat bounty">Responsible Disclosure</span>
+        <span class="cc-date">2026</span>
+      </div>
+      <h3 class="cc-title">Article title placeholder</h3>
+      <p class="cc-desc">
+        Short description of the finding. What was the vulnerable component,
+        what boundary was crossed, what was the confirmed impact.
+        One or two sentences max.
+      </p>
+      <span class="cc-status soon">Dropping soon</span>
+      <span class="cc-read off">Read the case file →</span>
+    </article>
 
-    <!-- ARTICLE LIST -->
-    <div class="sec-label">— Disclosure archive</div>
+  </div>
 
-    <div class="article-list">
+  <hr class="rule" style="margin-top:0">
 
-      <!-- ARTICLE 1 -->
-      <article class="article-row">
-        <div class="art-kicker">
-          <span class="art-kicker-left">
-            HiddenCry / Web App<span class="sep">→</span>RCE
-            &nbsp;·&nbsp; <span class="look">Look closer.</span>
-          </span>
-          <div class="art-kicker-right">
-            <span class="art-cat cve">CVE Writeup</span>
-            <span class="art-date">2026</span>
-          </div>
-        </div>
-        <h2 class="art-title"><a href="#">From eval() to Shell — Breaking YesWiki's Formula Calculator (CVE-2026-52778)</a></h2>
-        <p class="art-desc">
-          A deep-dive into discovering and exploiting an unauthenticated Remote Code Execution
-          vulnerability in YesWiki ≤ 4.6.5. The formula calculator exposes a raw eval() call
-          with no sandboxing — reachable without authentication, exploitable to full shell access.
-          CVSS 9.8 / CRITICAL. Coordinated disclosure and patch timeline included.
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       4. HOW THE EVIDENCE IS HANDLED
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div class="evidence-section">
+    <h2>How the evidence is handled</h2>
+    <p class="ev-sub">What is published, and what stays private.</p>
+    <div class="ev-cols">
+      <div class="ev-col pub">
+        <div class="ev-col-tag">Published</div>
+        <div class="ev-col-title">The tested path and confirmed result</div>
+        <p class="ev-col-body">
+          The attack chain, affected versions, the failed assumption,
+          the validation method, and the remediation principle.
+          Everything a defender needs to understand and patch the issue.
         </p>
-        <div class="art-tags">
-          <span class="art-tag"># SSTI</span>
-          <span class="art-tag"># RCE</span>
-          <span class="art-tag"># eval-injection</span>
-          <span class="art-tag"># unauthenticated</span>
-          <span class="art-tag"># PHP</span>
-        </div>
-        <div class="art-foot" style="margin-top:1.2rem">
-          <span class="art-status soon">Dropping soon</span>
-          <span class="art-cta disabled">Read the case file →</span>
-        </div>
-      </article>
-
-      <!-- ARTICLE 2 -->
-      <article class="article-row">
-        <div class="art-kicker">
-          <span class="art-kicker-left">
-            HiddenCry / Web App<span class="sep">→</span>Broken Access Control
-            &nbsp;·&nbsp; <span class="look">Look closer.</span>
-          </span>
-          <div class="art-kicker-right">
-            <span class="art-cat cve">CVE Writeup</span>
-            <span class="art-date">2026</span>
-          </div>
-        </div>
-        <h2 class="art-title"><a href="#">Ghost Sessions — When Deleting a User Isn't Enough (CVE-2026-46656 &amp; CVE-2026-46657)</a></h2>
-        <p class="art-desc">
-          Two back-to-back broken access control vulnerabilities in Bludit CMS &lt; 3.22.0.
-          Deleted users retain valid session tokens. Disabled accounts keep API access.
-          An in-depth walkthrough of the token lifecycle flaw, proof-of-concept, impact analysis,
-          and the patch that finally closed both gaps.
+      </div>
+      <div class="ev-col priv">
+        <div class="ev-col-tag">Private</div>
+        <div class="ev-col-title">Program evidence and customer data</div>
+        <p class="ev-col-body">
+          Proof-of-concept exploit code, session tokens, internal screenshots,
+          and identifiers that could aid exploitation before the patch
+          is widely deployed. Released only after full remediation.
         </p>
-        <div class="art-tags">
-          <span class="art-tag"># broken-access-control</span>
-          <span class="art-tag"># session-management</span>
-          <span class="art-tag"># token-revocation</span>
-          <span class="art-tag"># CMS</span>
-        </div>
-        <div class="art-foot" style="margin-top:1.2rem">
-          <span class="art-status soon">Dropping soon</span>
-          <span class="art-cta disabled">Read the case file →</span>
-        </div>
-      </article>
-
-    </div><!-- /article-list -->
-
-    <!-- TOPICS -->
-    <div class="topics-sec">
-      <div class="topics-title">Topics covered</div>
-      <div class="topics-row">
-        <span class="topic-pill"># web exploitation</span>
-        <span class="topic-pill"># CVE writeups</span>
-        <span class="topic-pill"># privilege escalation</span>
-        <span class="topic-pill"># active directory</span>
-        <span class="topic-pill"># bug bounty</span>
-        <span class="topic-pill"># mobile pentesting</span>
-        <span class="topic-pill"># malware analysis</span>
-        <span class="topic-pill"># network pentesting</span>
-        <span class="topic-pill"># red team</span>
       </div>
     </div>
+  </div>
 
-  </div><!-- /wrap -->
+  <hr class="rule">
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       5. FOUR ACTION LINKS
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div class="action-row">
+    <a href="../index.html#about"   class="action-link">Review the methodology →</a>
+    <a href="../index.html#about"   class="action-link">Meet the researcher →</a>
+    <a href="../cve/index.html"     class="action-link">CVE advisories →</a>
+    <a href="../index.html#contact" class="action-link">Get in touch →</a>
+  </div>
+
+</div>
 </main>
 
 <footer>
@@ -377,12 +516,8 @@ footer .fa { color: var(--accent) }
 </footer>
 
 <script>
-/* filter buttons — UI only for now */
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
+document.getElementById('hbg').addEventListener('click', () => {
+  document.getElementById('nav-links').classList.toggle('open');
 });
 </script>
 </body>
