@@ -339,7 +339,8 @@ h1.hero-name em { font-style: normal; color: var(--accent); text-shadow: 0 0 60p
    BUG BOUNTY
 ══════════════════════════════════════ */
 #bounty { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
-.hof-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.3rem }
+.hof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.3rem }
+@media (max-width: 900px) { .hof-grid { grid-template-columns: 1fr } }
 .hof-card {
   background: var(--card); border: 1px solid var(--border); border-radius: var(--r);
   padding: 1.6rem 1.8rem; transition: border-color .2s;
@@ -673,7 +674,7 @@ footer .fa { color: var(--accent) }
           <div class="hof-org" style="color:#60a5fa">🏛️ State of California VDP</div>
           <div class="hof-name">Remote Code Execution</div>
           <div class="hof-type">Bugcrowd — Government Infrastructure</div>
-          <div class="hof-badges"><span class="badge b-cyan">HALL OF FAME →</span></div>
+          <div class="hof-badges"><span class="badge b-crit">CRITICAL</span><span class="badge b-cyan">HALL OF FAME →</span></div>
         </a>
 
       </div>
