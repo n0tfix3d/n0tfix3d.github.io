@@ -14,6 +14,7 @@
   --bg:          #07090f;
   --surface:     #0c0f1a;
   --card:        #0f1320;
+  --panel:       #0b1d2b;
   --border:      #1a2235;
   --border-b:    #26354f;
   --accent:      #22d3ee;
@@ -84,41 +85,33 @@ nav {
 
 /* ── LAYOUT ── */
 main { position: relative; z-index: 1; padding-top: 56px }
-.wrap { max-width: 860px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem) }
+.wrap { max-width: 1060px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem) }
 hr.rule { border: none; border-top: 1px solid var(--border); margin: 0 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   1. PAGE HEADER
+   PAGE HEADER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.page-header { padding: 5rem 0 3.5rem }
-
+.page-header { padding: 5rem 0 3.5rem; max-width: 680px }
 .page-title {
-  font-family: var(--head);
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700; color: #fff;
-  line-height: 1.1; letter-spacing: -.02em;
+  font-family: var(--head); font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700; color: #fff; line-height: 1.1; letter-spacing: -.02em;
   margin-bottom: .55rem;
 }
 .page-tagline {
-  font-family: var(--head);
-  font-size: clamp(1rem, 2.2vw, 1.2rem);
-  font-weight: 400; color: var(--text2);
-  margin-bottom: 1.5rem;
+  font-family: var(--head); font-size: clamp(1rem, 2.2vw, 1.2rem);
+  font-weight: 400; color: var(--text2); margin-bottom: 1.5rem;
 }
 .page-intro {
-  font-size: .95rem; color: var(--text2);
-  line-height: 1.8; max-width: 580px;
-  margin-bottom: 1.4rem;
+  font-size: .95rem; color: var(--text2); line-height: 1.8; margin-bottom: 1.4rem;
 }
 .page-cta-link {
   font-family: var(--mono); font-size: 13px; color: var(--accent);
-  display: inline-flex; align-items: center; gap: .4rem;
-  transition: gap .15s;
+  display: inline-flex; align-items: center; gap: .4rem; transition: gap .15s;
 }
 .page-cta-link:hover { gap: .7rem }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   2. CASE PATH DIAGRAM
+   CASE PATH DIAGRAM
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .case-path-wrap {
   margin: 2.5rem 0;
@@ -148,21 +141,16 @@ hr.rule { border: none; border-top: 1px solid var(--border); margin: 0 }
 .cp-node .sub { font-size: 10px; color: var(--text3); font-style: italic }
 .cp-node.hl  { border-color: rgba(34,211,238,.4); color: var(--accent) }
 .cp-node.vul { border-color: rgba(239,68,68,.4);  color: var(--critical) }
-.cp-arrow {
-  display: flex; align-items: center; padding: 0 .45rem;
-  color: var(--text3); font-size: 16px; align-self: center;
-}
+.cp-arrow { display: flex; align-items: center; padding: 0 .45rem; color: var(--text3); font-size: 16px; align-self: center }
 .cp-boundary {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; padding: 0 .6rem;
-  border-left: 1px dashed var(--border); border-right: 1px dashed var(--border);
-  margin: 0 .2rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 0 .6rem; border-left: 1px dashed var(--border); border-right: 1px dashed var(--border); margin: 0 .2rem;
 }
 .cp-boundary .b-label { font-size: 10px; color: var(--text3); white-space: nowrap }
-.cp-boundary .b-sub   { font-size: 9px;  color: var(--text3); opacity: .6; white-space: nowrap }
+.cp-boundary .b-sub   { font-size: 9px; color: var(--text3); opacity: .6; white-space: nowrap }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   3. PUBLISHED CASE FILES
+   SECTION HEADING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .section-head {
   padding: 2.4rem 0 1.5rem;
@@ -170,97 +158,100 @@ hr.rule { border: none; border-top: 1px solid var(--border); margin: 0 }
   justify-content: space-between; gap: 1rem; flex-wrap: wrap;
 }
 .section-head h2 {
-  font-family: var(--head); font-size: 1.25rem; font-weight: 600; color: #fff;
+  font-family: var(--head); font-size: 1.5rem; font-weight: 700; color: #fff;
 }
 .section-head .sh-sub {
   font-family: var(--mono); font-size: 11px; color: var(--text3);
   text-transform: uppercase; letter-spacing: .12em;
 }
 
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CASE CARDS — 2-col alternating
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .case-list { display: flex; flex-direction: column }
 
 .case-card {
-  display: block; padding: 2rem 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5rem;
+  padding: 3rem 0;
   border-bottom: 1px solid var(--border);
-  position: relative; cursor: default;
-  transition: background .15s; border-radius: 4px;
+  align-items: center;
 }
-.case-card.linked { cursor: pointer }
-.case-card.linked:hover { background: var(--accent-glow) }
-.case-card::before {
-  content: ''; position: absolute; left: -1.4rem; top: 50%;
-  transform: translateY(-50%);
-  width: 2px; height: 0; background: var(--accent);
-  border-radius: 2px; transition: height .22s;
-}
-.case-card.linked:hover::before { height: 48% }
 
-/* kicker — single line: "HiddenCry / Web App → RCE · Look closer." */
-.cc-kicker {
-  font-family: var(--mono); font-size: 11.5px; color: var(--text3);
-  margin-bottom: .9rem; display: flex; align-items: center; flex-wrap: wrap; gap: .3rem;
-}
-.cc-kicker .ck-path { color: var(--text2) }
-.cc-kicker .ck-arr  { color: var(--accent) }
-.cc-kicker .ck-sep  { color: var(--text3) }
-.cc-kicker .ck-look { font-style: italic; color: var(--text3) }
+/* Even cards: flip image to right */
+.case-card:nth-child(even) .cc-visual  { order: 2 }
+.case-card:nth-child(even) .cc-content { order: 1 }
 
-/* category + date — same line */
+/* Visual panel */
+.cc-visual {
+  background: var(--panel);
+  border-radius: var(--r);
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(34,211,238,.08);
+}
+.cv-kicker {
+  position: absolute; top: 1rem; left: 1rem;
+  font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,.45);
+  text-transform: uppercase; letter-spacing: .15em;
+}
+.cv-look {
+  position: absolute; bottom: 1rem; right: 1rem;
+  font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,.3);
+  text-transform: uppercase; letter-spacing: .15em;
+}
+.cv-art { width: 65%; height: 65%; display: flex; align-items: center; justify-content: center }
+.cv-art svg { width: 100%; height: 100% }
+
+/* Content panel */
+.cc-content { display: flex; flex-direction: column; gap: 0 }
+
 .cc-meta {
-  display: flex; align-items: center; gap: .7rem;
-  flex-wrap: wrap; margin-bottom: .9rem;
+  font-family: var(--mono); font-size: 11px; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .14em;
+  margin-bottom: 1rem;
+  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
 }
-.cc-cat {
-  font-family: var(--mono); font-size: 10px; text-transform: uppercase;
-  letter-spacing: .12em; padding: .18rem .75rem; border-radius: 20px;
-  border: 1px solid var(--border); color: var(--text3);
-}
-.cc-cat.cve    { color: var(--critical); border-color: rgba(239,68,68,.25) }
-.cc-cat.bounty { color: var(--high);     border-color: rgba(249,115,22,.25) }
-.cc-cat.notes  { color: var(--accent);   border-color: rgba(34,211,238,.25) }
-.cc-date { font-family: var(--mono); font-size: 11px; color: var(--text3) }
+.cc-meta .sep { opacity: .4 }
 
-/* H3 title */
 .cc-title {
-  font-family: var(--head); font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-  font-weight: 600; color: #fff; line-height: 1.25;
-  margin-bottom: .6rem; transition: color .15s;
+  font-family: var(--head); font-size: clamp(1.3rem, 2.8vw, 1.75rem);
+  font-weight: 700; color: #fff; line-height: 1.2;
+  margin-bottom: .9rem; letter-spacing: -.01em;
 }
-.case-card.linked:hover .cc-title { color: var(--accent) }
 
-/* description paragraph */
 .cc-desc {
   font-size: .93rem; color: var(--text2); line-height: 1.78;
-  max-width: 660px; margin-bottom: 1.1rem;
+  margin-bottom: 1.2rem;
 }
 
-/* status badge */
 .cc-status {
-  display: inline-block; margin-bottom: .9rem;
-  font-family: var(--mono); font-size: 10px; text-transform: uppercase;
-  letter-spacing: .1em; padding: .22rem .85rem; border-radius: 20px;
+  display: inline-block; margin-bottom: 1.1rem;
+  font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+  letter-spacing: .14em; color: var(--text3);
+  border-bottom: 1px solid var(--text3); padding-bottom: 1px;
 }
-.cc-status.resolved { background: rgba(34,197,94,.08);  color: var(--low);    border: 1px solid rgba(34,197,94,.2) }
-.cc-status.public   { background: var(--accent-dim);    color: var(--accent); border: 1px solid rgba(34,211,238,.25) }
-.cc-status.soon     { background: rgba(249,115,22,.08); color: var(--high);   border: 1px solid rgba(249,115,22,.2) }
+.cc-status.resolved { color: var(--low);    border-color: var(--low) }
+.cc-status.public   { color: var(--accent); border-color: var(--accent) }
+.cc-status.soon     { color: var(--high);   border-color: var(--high) }
 
-/* read link */
 .cc-read {
-  display: block; margin-top: .2rem;
-  font-family: var(--mono); font-size: 12.5px; color: var(--accent);
-  display: inline-flex; align-items: center; gap: .4rem;
-  transition: gap .15s;
+  font-family: var(--head); font-size: 1rem; font-weight: 600;
+  color: var(--text); display: inline-flex; align-items: center; gap: .4rem;
+  transition: color .15s, gap .15s;
 }
-.cc-read.off { color: var(--text3); pointer-events: none }
-.case-card.linked:hover .cc-read { gap: .7rem }
+.cc-read:hover { color: var(--accent); gap: .7rem }
+.cc-read.off { color: var(--text3); pointer-events: none; font-weight: 400 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   4. HOW EVIDENCE IS HANDLED
+   HOW EVIDENCE IS HANDLED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .evidence-section { padding: 3rem 0 2rem }
 .evidence-section h2 {
-  font-family: var(--head); font-size: 1.25rem; font-weight: 600;
-  color: #fff; margin-bottom: .3rem;
+  font-family: var(--head); font-size: 1.3rem; font-weight: 600; color: #fff; margin-bottom: .3rem;
 }
 .ev-sub { font-size: .9rem; color: var(--text3); margin-bottom: 2rem }
 .ev-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2.2rem }
@@ -277,21 +268,19 @@ hr.rule { border: none; border-top: 1px solid var(--border); margin: 0 }
 @media (max-width: 580px) { .ev-cols { grid-template-columns: 1fr } }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   5. FOUR ACTION LINKS
+   ACTION LINKS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .action-row {
   display: flex; flex-wrap: wrap; gap: 1rem 2.5rem;
-  padding: 2rem 0 5rem;
-  border-top: 1px solid var(--border);
+  padding: 2rem 0 5rem; border-top: 1px solid var(--border);
 }
 .action-link {
   font-family: var(--mono); font-size: 12.5px; color: var(--text2);
-  display: inline-flex; align-items: center; gap: .4rem;
-  transition: color .15s, gap .15s;
+  display: inline-flex; align-items: center; gap: .4rem; transition: color .15s, gap .15s;
 }
 .action-link:hover { color: var(--accent); gap: .7rem }
 
-/* ── FOOTER ── */
+/* FOOTER */
 footer {
   border-top: 1px solid var(--border);
   padding: 1.4rem clamp(1.5rem, 4vw, 5rem);
@@ -303,7 +292,13 @@ footer {
 footer .fa { color: var(--accent) }
 
 /* MOBILE */
-@media (max-width: 640px) {
+@media (max-width: 720px) {
+  .case-card {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+  }
+  .case-card:nth-child(even) .cc-visual  { order: 1 }
+  .case-card:nth-child(even) .cc-content { order: 2 }
   .nav-links {
     display: none; flex-direction: column; position: fixed;
     top: 56px; left: 0; right: 0;
@@ -312,13 +307,12 @@ footer .fa { color: var(--accent) }
   }
   .nav-links.open { display: flex }
   .hamburger { display: flex }
-  .cp-flow { gap: .3rem }
 }
 </style>
 </head>
 <body>
 
-<!-- ── NAV ── -->
+<!-- NAV -->
 <nav>
   <a href="../index.html" class="nav-logo">hidden<span>@</span>cry<span>:~$</span></a>
   <div class="nav-links" id="nav-links">
@@ -336,140 +330,196 @@ footer .fa { color: var(--accent) }
 <main>
 <div class="wrap">
 
-  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       1. PAGE HEADER
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <!-- PAGE HEADER -->
   <header class="page-header">
     <h1 class="page-title">Research &amp; responsible disclosure</h1>
     <p class="page-tagline">Findings, evidence, and lessons learned.</p>
     <p class="page-intro">
       Published case studies from authorized security research and vulnerability disclosure programs.
-      Each case documents the full chain — discovery to remediation — and states its disclosure
-      context. No speculation, only confirmed findings with evidence.
+      Each case documents the full chain — discovery to remediation — and states its disclosure context.
+      No speculation, only confirmed findings with evidence.
     </p>
     <a href="../index.html#about" class="page-cta-link">How I approach a review →</a>
   </header>
 
   <hr class="rule">
 
-  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       2. CASE PATH DIAGRAM
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <!-- CASE PATH DIAGRAM -->
   <div class="case-path-wrap">
     <div class="cp-header">
       Case path · YesWiki Formula Calculator
       <span class="cp-badge">public</span>
     </div>
     <div class="cp-flow">
-      <div class="cp-node">
-        Browser
-        <span class="sub">attacker</span>
-      </div>
+      <div class="cp-node">Browser<span class="sub">attacker</span></div>
       <div class="cp-arrow">→</div>
-      <div class="cp-boundary">
-        <span class="b-label">Boundary 1</span>
-        <span class="b-sub">no auth</span>
-      </div>
+      <div class="cp-boundary"><span class="b-label">Boundary 1</span><span class="b-sub">no auth</span></div>
       <div class="cp-arrow">→</div>
-      <div class="cp-node hl">
-        Formula API
-        <span class="sub">/api/formula</span>
-      </div>
+      <div class="cp-node hl">Formula API<span class="sub">/api/formula</span></div>
       <div class="cp-arrow">→</div>
-      <div class="cp-boundary">
-        <span class="b-label">Boundary 2</span>
-        <span class="b-sub">no sandbox</span>
-      </div>
+      <div class="cp-boundary"><span class="b-label">Boundary 2</span><span class="b-sub">no sandbox</span></div>
       <div class="cp-arrow">→</div>
-      <div class="cp-node vul">
-        PHP eval()
-        <span class="sub">code runs on server</span>
-      </div>
+      <div class="cp-node vul">PHP eval()<span class="sub">code runs on server</span></div>
     </div>
   </div>
 
   <hr class="rule">
 
-  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       3. PUBLISHED CASE FILES
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <!-- SECTION HEADING -->
   <div class="section-head">
     <h2>Published case files</h2>
     <span class="sh-sub">Responsible disclosure archive</span>
   </div>
 
+  <!-- CASE CARDS -->
   <div class="case-list">
 
-    <!-- CARD 1 -->
+    <!-- CARD 1 — image LEFT, content RIGHT -->
     <article class="case-card">
-      <div class="cc-kicker">
-        <span class="ck-path">HiddenCry / Web App <span class="ck-arr">→</span> RCE</span>
-        <span class="ck-sep">·</span>
-        <span class="ck-look">Look closer.</span>
+      <div class="cc-visual">
+        <span class="cv-kicker">HiddenCry / Web App → RCE</span>
+        <div class="cv-art">
+          <!-- SVG: server with code injection -->
+          <svg viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- server box -->
+            <rect x="110" y="45" width="72" height="58" rx="4" stroke="rgba(255,255,255,0.3)" stroke-width="1.2"/>
+            <line x1="110" y1="60" x2="182" y2="60" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+            <!-- server lines -->
+            <line x1="118" y1="70" x2="158" y2="70" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+            <line x1="118" y1="78" x2="148" y2="78" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+            <line x1="118" y1="86" x2="153" y2="86" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+            <!-- server dot status -->
+            <circle cx="172" cy="53" r="3" fill="rgba(239,68,68,0.6)"/>
+            <!-- code box -->
+            <rect x="18" y="50" width="68" height="42" rx="4" stroke="rgba(34,211,238,0.5)" stroke-width="1.2"/>
+            <line x1="18" y1="62" x2="86" y2="62" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
+            <!-- code lines -->
+            <line x1="26" y1="70" x2="60" y2="70" stroke="rgba(34,211,238,0.4)" stroke-width="1"/>
+            <line x1="26" y1="77" x2="52" y2="77" stroke="rgba(34,211,238,0.25)" stroke-width="1"/>
+            <line x1="26" y1="84" x2="58" y2="84" stroke="rgba(34,211,238,0.25)" stroke-width="1"/>
+            <!-- payload arrow -->
+            <line x1="88" y1="72" x2="108" y2="72" stroke="rgba(239,68,68,0.6)" stroke-width="1.2" stroke-dasharray="3 2"/>
+            <polygon points="106,69 112,72 106,75" fill="rgba(239,68,68,0.6)"/>
+            <!-- top node dot -->
+            <circle cx="52" cy="20" r="4" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <line x1="52" y1="24" x2="52" y2="49" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="2 2"/>
+            <!-- bottom dots -->
+            <circle cx="30" cy="130" r="3" fill="rgba(34,211,238,0.3)"/>
+            <circle cx="160" cy="125" r="2.5" fill="rgba(255,255,255,0.15)"/>
+          </svg>
+        </div>
+        <span class="cv-look">Look closer.</span>
       </div>
-      <div class="cc-meta">
-        <span class="cc-cat cve">CVE Writeup</span>
-        <span class="cc-date">May 23, 2026</span>
+      <div class="cc-content">
+        <div class="cc-meta">
+          <span>CVE Writeup</span>
+          <span class="sep">·</span>
+          <span>May 23, 2026</span>
+        </div>
+        <h3 class="cc-title">Article title placeholder — CVE-XXXX-XXXXX</h3>
+        <p class="cc-desc">
+          Short description of the finding. What was the vulnerable component,
+          what boundary was crossed, what was the confirmed impact.
+          One or two sentences max.
+        </p>
+        <span class="cc-status soon">Dropping soon</span>
+        <span class="cc-read off">Read the case file ↗</span>
       </div>
-      <h3 class="cc-title">Article title placeholder — CVE-XXXX-XXXXX</h3>
-      <p class="cc-desc">
-        Short description of the finding. What was the vulnerable component,
-        what boundary was crossed, what was the confirmed impact.
-        One or two sentences max.
-      </p>
-      <span class="cc-status soon">Dropping soon</span>
-      <span class="cc-read off">Read the case file →</span>
     </article>
 
-    <!-- CARD 2 -->
+    <!-- CARD 2 — content LEFT, image RIGHT -->
     <article class="case-card">
-      <div class="cc-kicker">
-        <span class="ck-path">HiddenCry / Web App <span class="ck-arr">→</span> Broken Access Control</span>
-        <span class="ck-sep">·</span>
-        <span class="ck-look">Look closer.</span>
+      <div class="cc-visual">
+        <span class="cv-kicker">HiddenCry / Web App → Access Control</span>
+        <div class="cv-art">
+          <!-- SVG: stacked files / access layers -->
+          <svg viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- back layer -->
+            <rect x="55" y="30" width="90" height="60" rx="4" stroke="rgba(255,255,255,0.15)" stroke-width="1.2" transform="rotate(-4 55 30)"/>
+            <!-- mid layer -->
+            <rect x="55" y="38" width="90" height="60" rx="4" stroke="rgba(255,255,255,0.22)" stroke-width="1.2" transform="rotate(-2 55 38)"/>
+            <!-- front layer -->
+            <rect x="55" y="46" width="90" height="60" rx="4" stroke="rgba(34,211,238,0.5)" stroke-width="1.2"/>
+            <!-- lines on front -->
+            <line x1="66" y1="62" x2="134" y2="62" stroke="rgba(34,211,238,0.3)" stroke-width="1"/>
+            <line x1="66" y1="72" x2="118" y2="72" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+            <line x1="66" y1="82" x2="124" y2="82" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+            <!-- bypass arrow -->
+            <path d="M 148 65 C 165 65 165 100 148 100" stroke="rgba(239,68,68,0.5)" stroke-width="1.2" stroke-dasharray="3 2" fill="none"/>
+            <polygon points="145,97 151,102 145,105" fill="rgba(239,68,68,0.5)"/>
+            <!-- label: BYPASSED -->
+            <circle cx="30" cy="128" r="3" fill="rgba(34,211,238,0.3)"/>
+            <circle cx="170" cy="22" r="2.5" fill="rgba(255,255,255,0.15)"/>
+          </svg>
+        </div>
+        <span class="cv-look">Look closer.</span>
       </div>
-      <div class="cc-meta">
-        <span class="cc-cat cve">CVE Writeup</span>
-        <span class="cc-date">Apr 25, 2026</span>
+      <div class="cc-content">
+        <div class="cc-meta">
+          <span>CVE Writeup</span>
+          <span class="sep">·</span>
+          <span>Apr 25, 2026</span>
+        </div>
+        <h3 class="cc-title">Article title placeholder — CVE-XXXX-XXXXX</h3>
+        <p class="cc-desc">
+          Short description of the finding. What was the vulnerable component,
+          what boundary was crossed, what was the confirmed impact.
+          One or two sentences max.
+        </p>
+        <span class="cc-status soon">Dropping soon</span>
+        <span class="cc-read off">Read the case file ↗</span>
       </div>
-      <h3 class="cc-title">Article title placeholder — CVE-XXXX-XXXXX</h3>
-      <p class="cc-desc">
-        Short description of the finding. What was the vulnerable component,
-        what boundary was crossed, what was the confirmed impact.
-        One or two sentences max.
-      </p>
-      <span class="cc-status soon">Dropping soon</span>
-      <span class="cc-read off">Read the case file →</span>
     </article>
 
-    <!-- CARD 3 -->
+    <!-- CARD 3 — image LEFT, content RIGHT -->
     <article class="case-card">
-      <div class="cc-kicker">
-        <span class="ck-path">HiddenCry / Bug Bounty <span class="ck-arr">→</span> RCE</span>
-        <span class="ck-sep">·</span>
-        <span class="ck-look">Look closer.</span>
+      <div class="cc-visual">
+        <span class="cv-kicker">HiddenCry / Bug Bounty → RCE</span>
+        <div class="cv-art">
+          <!-- SVG: target / scope -->
+          <svg viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- outer ring -->
+            <circle cx="100" cy="75" r="52" stroke="rgba(255,255,255,0.15)" stroke-width="1.2" stroke-dasharray="4 3"/>
+            <!-- mid ring -->
+            <circle cx="100" cy="75" r="34" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>
+            <!-- inner ring -->
+            <circle cx="100" cy="75" r="17" stroke="rgba(34,211,238,0.5)" stroke-width="1.2"/>
+            <!-- center dot -->
+            <circle cx="100" cy="75" r="4" fill="rgba(34,211,238,0.6)"/>
+            <!-- crosshair lines -->
+            <line x1="100" y1="20" x2="100" y2="52" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+            <line x1="100" y1="98" x2="100" y2="130" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+            <line x1="45" y1="75" x2="78" y2="75" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+            <line x1="122" y1="75" x2="155" y2="75" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+            <!-- nodes -->
+            <circle cx="30" cy="30" r="3" fill="rgba(255,255,255,0.15)"/>
+            <circle cx="170" cy="128" r="3" fill="rgba(34,211,238,0.3)"/>
+          </svg>
+        </div>
+        <span class="cv-look">Look closer.</span>
       </div>
-      <div class="cc-meta">
-        <span class="cc-cat bounty">Responsible Disclosure</span>
-        <span class="cc-date">2026</span>
+      <div class="cc-content">
+        <div class="cc-meta">
+          <span>Responsible Disclosure</span>
+          <span class="sep">·</span>
+          <span>2026</span>
+        </div>
+        <h3 class="cc-title">Article title placeholder</h3>
+        <p class="cc-desc">
+          Short description of the finding. What was the vulnerable component,
+          what boundary was crossed, what was the confirmed impact.
+          One or two sentences max.
+        </p>
+        <span class="cc-status soon">Dropping soon</span>
+        <span class="cc-read off">Read the case file ↗</span>
       </div>
-      <h3 class="cc-title">Article title placeholder</h3>
-      <p class="cc-desc">
-        Short description of the finding. What was the vulnerable component,
-        what boundary was crossed, what was the confirmed impact.
-        One or two sentences max.
-      </p>
-      <span class="cc-status soon">Dropping soon</span>
-      <span class="cc-read off">Read the case file →</span>
     </article>
 
-  </div>
+  </div><!-- /case-list -->
 
   <hr class="rule" style="margin-top:0">
 
-  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       4. HOW THE EVIDENCE IS HANDLED
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <!-- HOW THE EVIDENCE IS HANDLED -->
   <div class="evidence-section">
     <h2>How the evidence is handled</h2>
     <p class="ev-sub">What is published, and what stays private.</p>
@@ -497,9 +547,7 @@ footer .fa { color: var(--accent) }
 
   <hr class="rule">
 
-  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       5. FOUR ACTION LINKS
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <!-- FOUR ACTION LINKS -->
   <div class="action-row">
     <a href="../index.html#about"   class="action-link">Review the methodology →</a>
     <a href="../index.html#about"   class="action-link">Meet the researcher →</a>
