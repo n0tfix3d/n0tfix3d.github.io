@@ -339,8 +339,7 @@ h1.hero-name em { font-style: normal; color: var(--accent); text-shadow: 0 0 60p
    BUG BOUNTY
 ══════════════════════════════════════ */
 #bounty { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
-.hof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.3rem }
-@media (max-width: 900px) { .hof-grid { grid-template-columns: 1fr } }
+.hof-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.3rem }
 .hof-card {
   background: var(--card); border: 1px solid var(--border); border-radius: var(--r);
   padding: 1.6rem 1.8rem; transition: border-color .2s;
@@ -350,8 +349,7 @@ h1.hero-name em { font-style: normal; color: var(--accent); text-shadow: 0 0 60p
 .hof-org { font-family: var(--mono); font-size: 12px; color: var(--high); text-transform: uppercase; letter-spacing: .12em; margin-bottom: .5rem; min-height: 2.4em }
 .hof-name { font-family: var(--head); font-weight: 600; color: #fff; font-size: 1.1rem; margin-bottom: .3rem }
 .hof-type { font-size: .9rem; color: var(--text2); margin-bottom: 1rem; flex: 1 }
-.hof-card .badge { align-self: flex-start }
-.hof-badges { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center }
+.hof-badges { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: auto }
 
 /* ══════════════════════════════════════
    CONTACT
