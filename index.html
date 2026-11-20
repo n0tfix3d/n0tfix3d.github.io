@@ -343,11 +343,12 @@ h1.hero-name em { font-style: normal; color: var(--accent); text-shadow: 0 0 60p
 .hof-card {
   background: var(--card); border: 1px solid var(--border); border-radius: var(--r);
   padding: 1.6rem 1.8rem; transition: border-color .2s;
+  display: flex; flex-direction: column;
 }
 .hof-card:hover { border-color: var(--border-b) }
-.hof-org { font-family: var(--mono); font-size: 12px; color: var(--high); text-transform: uppercase; letter-spacing: .12em; margin-bottom: .5rem }
+.hof-org { font-family: var(--mono); font-size: 12px; color: var(--high); text-transform: uppercase; letter-spacing: .12em; margin-bottom: .5rem; min-height: 2.4em }
 .hof-name { font-family: var(--head); font-weight: 600; color: #fff; font-size: 1.1rem; margin-bottom: .3rem }
-.hof-type { font-size: .9rem; color: var(--text2); margin-bottom: 1rem }
+.hof-type { font-size: .9rem; color: var(--text2); margin-bottom: 1rem; flex: 1 }
 
 /* ══════════════════════════════════════
    CONTACT
