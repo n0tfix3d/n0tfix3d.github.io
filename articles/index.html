@@ -64,12 +64,21 @@ nav {
 }
 .nav-logo { font-family: var(--mono); font-size: 14px; color: var(--accent); font-weight: 500; letter-spacing: .04em }
 .nav-logo span { color: var(--text2) }
-.nav-back {
-  font-family: var(--mono); font-size: 12px; color: var(--text2);
-  padding: 6px 16px; border: 1px solid var(--border); border-radius: var(--rsm);
-  transition: all .15s;
+.nav-links { display: flex; align-items: center; gap: .25rem }
+.nav-links a {
+  font-family: var(--mono); font-size: 12px; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .1em;
+  padding: 7px 14px; border-radius: var(--rsm);
+  transition: color .15s, background .15s;
 }
-.nav-back:hover { color: var(--accent); border-color: var(--accent) }
+.nav-links a:hover { color: var(--accent); background: rgba(34,211,238,.1) }
+.nav-cve {
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  color: var(--bg) !important; background: var(--accent) !important;
+  padding: 6px 16px; border-radius: var(--rsm); letter-spacing: .07em;
+  text-transform: none; transition: opacity .15s !important;
+}
+.nav-cve:hover { opacity: .85 !important }
 
 /* LAYOUT */
 main { position: relative; z-index: 1; padding-top: 56px }
@@ -235,7 +244,13 @@ footer .fa { color: var(--accent) }
 
 <nav>
   <a href="../index.html" class="nav-logo">hidden<span>@</span>cry<span>:~$</span></a>
-  <a href="../index.html" class="nav-back">← Portfolio</a>
+  <div class="nav-links">
+    <a href="../index.html#about">About Me</a>
+    <a href="../cve/index.html" class="nav-cve">CVE →</a>
+    <a href="../index.html#bounty">Hall of Fame</a>
+    <a href="../index.html#contact">Contact</a>
+    <a href="index.html" style="color:var(--accent)">Articles</a>
+  </div>
 </nav>
 
 <main>
